@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">OA-Index</string>
+    <string name="hello_world">Hello world!</string>
+	<string name="hello">Hello World, TtDemoActivity!</string>
+    
+	<string name="action_setting">设置</string>
+	
+	<string name="activity_mycenter">个人中心</string>
+    
+    <string name="commection">信息沟通</string>
+    <string name="notification">通知通告</string>
+    <string name="worktask">工作任务</string>
+    <string name="workreminder">工作提醒</string>
+    <string name="knowledge">最新知识</string>
+    
+    <string name="action_return">返回</string>
+    <string name="action_menu">菜单</string>
+    <string name="action_startmenu">开始菜单</string>
+    
+    <string name="activity_newmessage">新信息</string>
+    <string name="action_refresh">刷新</string>
+    <string name="action_send">发送</string>
+    <!-- 收件箱 -->
+	<string name="activity_inbox">收件箱</string>
+	<string name="action_select_unread">未读</string>
+	<string name="action_select_read">已读</string>
+	<string name="action_select_all">全部</string>
+	<!-- 信息详情 -->
+    <string name="activity_showmessage">信息</string>
+	<string name="action_reply">回复</string>
+    <string name="action_transpond">转发</string>
+    <string name="action_delete">删除</string>
+    <string name="activity_contacts">联系人</string>
+    <!-- 发件箱 -->
+    <string name="activity_outbox">发件箱</string>
+    <!-- 草稿箱 -->
+    <string name="activity_draft">草稿箱</string>
+    <!-- 回收箱 -->
+    <string name="activity_waste">草稿箱</string>
+</resources>
