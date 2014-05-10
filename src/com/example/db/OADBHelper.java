@@ -6,7 +6,11 @@ import net.tsz.afinal.FinalDb;
 import android.content.Context;
 
 import com.example.beans.MyMessageBean;
-
+/**
+ * 数据库操作相关类
+ * @author seven
+ *
+ */
 public class OADBHelper {
 	/**
 	 * 保存信息数据
