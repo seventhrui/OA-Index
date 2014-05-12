@@ -23,7 +23,7 @@ public class HttpHelper {
 		conn.setRequestMethod("GET");
 		conn.setRequestProperty("Charset", "UTF-8");
 		// 设置连接超时
-		conn.setConnectTimeout(10 * 1000);
+		conn.setConnectTimeout(5 * 1000);
 		conn.connect();
 		int fileLength = conn.getContentLength();
 		if (conn.getResponseCode() == 200 && fileLength > 0) {

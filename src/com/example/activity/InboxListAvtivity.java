@@ -6,16 +6,19 @@ import java.util.List;
 
 import com.example.oa_index.R;
 import com.example.adapter.MessageListAdapter;
+import com.example.beans.LoginConfig;
 import com.example.beans.MyMessageBean;
 import com.example.db.OADBHelper;
 import com.example.http.HttpHelper;
 
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,20 +40,25 @@ public class InboxListAvtivity extends FinalActivity {
 	private final static int DOWNLOAD_MESSAGE_SUCCESS=1;//下载信息成功
 	private final static int DOWNLOAD_MESSAGE_FAILURE=-1;//下载信息失败
 	private final static int DATABASE_MESSAGE_SAVE=2;//保存信息数据
+	private final static int CONNECTION_TIMEOUT=3;//连接超时
 	private final static int STATE_MESSAGE_ALL=0;//全部
 	private final static int STATE_MESSAGE_UNREAD=1;//已读
 	private final static int STATE_MESSAGE_READ=2;//未读
 	private String inboxresult="0";
 	private List<MyMessageBean> messagelist=null;//信息list
-	private MessageListAdapter mesladapter=null;
+	private MessageListAdapter mesladapter=null;//信息list适配器
 	private FinalDb db = null;
+	private ProgressDialog dialog=null;//下载进程对话框
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inboxlist);
-        handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
         db = FinalDb.create(this);
         initView();
+        //下载消息
+        handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
+        //handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
     }
 	private void initView(){
     	ActionBar actionbar=getActionBar();
@@ -84,7 +92,11 @@ public class InboxListAvtivity extends FinalActivity {
 		public void run() {
 			try {
 				Log.v("收件箱", "下载数据");
-				String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=2&uid=20121015095350990612c4db3cab4725";//内网ip
+				String url=LoginConfig.getLoginConfig().getServerip();
+				String userid=LoginConfig.getLoginConfig().getUserid();
+				//String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=2&uid=20121015095350990612c4db3cab4725";//内网ip
+				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=2&uid="+userid;//内网ip
+				Log.v("信息地址", urlPath);
 				// 连接服务器成功之后，解析数据
 				String data = new HttpHelper(urlPath).readParse();
 				if (data.equals("-1")) {
@@ -100,7 +112,12 @@ public class InboxListAvtivity extends FinalActivity {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				handlerdealmessage.sendEmptyMessage(CONNECTION_TIMEOUT);
+				handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
 			}
+			//下载进程对话框消失
+			showDownloadDialog(false);
+			//dialog.dismiss();
 		}
 	};
 	/**
@@ -145,6 +162,21 @@ public class InboxListAvtivity extends FinalActivity {
     	mesladapter.notifyDataSetChanged();
 		lv_messages.setAdapter(mesladapter);
 	}
+	/**
+	 * 下载进程对话框
+	 */
+	private void showDownloadDialog(boolean b){
+		if(b)
+			dialog=ProgressDialog.show(InboxListAvtivity.this,"正在加载...","请稍后",true,true);//显示下载进程对话框
+		else
+			dialog.dismiss();//下载进程对话框消失
+	}
+	/**
+	 * 提示下载超时
+	 */
+	private void toastTimeOut(){
+		Toast.makeText(getApplicationContext(), R.string.timeout, Toast.LENGTH_LONG).show();
+	}
 	//下载信息
 	private Handler handlerdealmessage=new Handler(){
 		@Override
@@ -153,6 +185,7 @@ public class InboxListAvtivity extends FinalActivity {
 			switch (whatVal) {
 			case DOWNLOAD_MESSAGE_BEGIN:
 				Log.v("收件箱", "下载开始");
+				showDownloadDialog(true);
 				downloadMessage();
 				break;
 			case DOWNLOAD_MESSAGE_SUCCESS:
@@ -165,6 +198,10 @@ public class InboxListAvtivity extends FinalActivity {
 				break;
 			case DATABASE_MESSAGE_SAVE:
 				Log.v("收件箱", "保存数据");
+				break;
+			case CONNECTION_TIMEOUT:
+				Log.v("收件箱", "连接超时");
+				toastTimeOut();
 				break;
 			}
 		}
@@ -210,22 +247,18 @@ public class InboxListAvtivity extends FinalActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("刷新")) {
-			Toast.makeText(getApplicationContext(), item.getTitle()+"", Toast.LENGTH_SHORT).show();
 			handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
 		}
 		//未读
 		else if (item.getTitle().toString().trim().equals("未读")) {
-			Toast.makeText(getApplicationContext(), item.getTitle()+"", Toast.LENGTH_SHORT).show();
 			handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_UNREAD);
 		}
 		//已读
 		else if (item.getTitle().toString().trim().equals("已读")) {
-			Toast.makeText(getApplicationContext(), item.getTitle()+"", Toast.LENGTH_SHORT).show();
 			handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_READ);
 		}
 		//全部
 		else if (item.getTitle().toString().trim().equals("全部")) {
-			Toast.makeText(getApplicationContext(), item.getTitle()+"", Toast.LENGTH_SHORT).show();
 			handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
 		}
 		//返回
@@ -233,5 +266,15 @@ public class InboxListAvtivity extends FinalActivity {
 			this.finish();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	//MyCenterActivity.dialog.dismiss();
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
+			this.finish();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }

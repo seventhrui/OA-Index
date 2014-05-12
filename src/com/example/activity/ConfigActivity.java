@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -19,7 +20,7 @@ import net.tsz.afinal.annotation.view.ViewInject;
 public class ConfigActivity extends FinalActivity {
 	@ViewInject(id = R.id.et_serverpath) EditText et_serverpath;// 服务器地址
 	@ViewInject(id = R.id.bt_saveconfig, click = "onClick_saveConfig") Button bt_saveconfig;// 保存按钮
-	@ViewInject(id = R.id.bt_Undo, click = "onClick_Undo") Button bt_Undo;// 取消按钮
+	@ViewInject(id = R.id.bt_logout, click = "onClick_Logout") Button bt_logout;// 取消按钮
 	private String serverpath;
 	private SharedPreferences spserverpath;// 存储用户名和密码
 
@@ -27,6 +28,7 @@ public class ConfigActivity extends FinalActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_config);
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		initView();
 	}
 	
@@ -45,7 +47,15 @@ public class ConfigActivity extends FinalActivity {
         setResult(1003, intent);
 		this.finish();
 	}
-	public void onClick_Undo(View v){
+	public void onClick_Logout(View v){
+		serverpath=et_serverpath.getText().toString().trim();
+		Editor editor=spserverpath.edit();
+		editor.putString("UserNumber", "");
+		editor.putString("UserPasswd", "");
+		editor.commit();
 		this.finish();
+		Intent intent=new Intent();
+		intent.setClass(getApplicationContext(), LoginActivity.class);
+		startActivity(intent);
 	}
 }

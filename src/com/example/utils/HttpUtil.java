@@ -11,7 +11,6 @@ public class HttpUtil {
 	public static String downloadString(String urlPath) {
 		FinalHttp fh = new FinalHttp();
 		fh.get(urlPath, new AjaxCallBack<String>() {
-			
 			@Override
 			public void onLoading(long count, long current) { // 每5秒钟自动被回调一次，通过progress是否回调onLoading和回调频率
 				resultstring = current + "/" + count;

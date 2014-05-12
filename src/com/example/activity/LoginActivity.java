@@ -1,10 +1,13 @@
 package com.example.activity;
 
+import com.example.beans.LoginConfig;
+import com.example.mybase.MyBaseActivity;
 import com.example.oa_index.R;
 
-import net.tsz.afinal.FinalActivity;
 import net.tsz.afinal.annotation.view.ViewInject;
 import android.app.ActionBar;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -13,6 +16,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -22,7 +26,7 @@ import android.widget.Toast;
  * 用户登录
  *
  */
-public class LoginActivity extends FinalActivity {
+public class LoginActivity extends MyBaseActivity {
 	@ViewInject(id = R.id.et_loginusernum) EditText et_loginusernum;//用户名输入
 	@ViewInject(id = R.id.et_loginpassword) EditText et_loginpasword;// 密码输入
 	@ViewInject(id = R.id.cb_rememberpwd) CheckBox cb_rememberpwd;//记住密码
@@ -37,13 +41,16 @@ public class LoginActivity extends FinalActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
+		//禁止输入法自动弹出
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		initView();
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.v("服务器地址1",serverpath);
+		Log.v("服务器地址2",serverpath);
+		initView();
 	}
 	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -52,40 +59,72 @@ public class LoginActivity extends FinalActivity {
         if(requestCode == 1002 && resultCode == 1003)
         {
         	serverpath = data.getStringExtra("serverpath");
-            Log.v("服务器地址2",serverpath);
+            Log.v("服务器地址1",serverpath);
         }
     }
 	private void initView(){
 		ActionBar actionbar=getActionBar();
 		spusernameandpasw = getSharedPreferences("config", MODE_PRIVATE);
-		et_loginusernum.setText(spusernameandpasw.getString("UserNumber", ""));
-		et_loginpasword.setText(spusernameandpasw.getString("UserPasswd", ""));
+		//用户名
+		username=spusernameandpasw.getString("UserNumber", "");
+		//用户密码
+		userpasw=spusernameandpasw.getString("UserPasswd", "");
+		et_loginusernum.setText(username);
+		et_loginpasword.setText(userpasw);
+		//服务器地址
 		serverpath=spusernameandpasw.getString("ServerPath", "");
+		
+		if(serverpath.equals("")){
+			Log.v("服务器地址3",serverpath);
+			alertDialog("请确认服务器地址");
+		}
+		
+		LoginConfig.getLoginConfig().setUsername(username);
+		LoginConfig.getLoginConfig().setUserid("20121015095350990612c4db3cab4725");
+		LoginConfig.getLoginConfig().setServerip(serverpath);
+		
+		if(!username.equals("")&&!userpasw.equals("")&&!serverpath.equals("")){
+			loginCheck();
+		}
 	}
 	/**
 	 * 登录
 	 * @param v
 	 */
 	public void onClick_gotoindex(View v) {
+		loginCheck();
+	}
+	/**
+	 * 登录校验结果及跳转
+	 */
+	private void loginCheck(){
 		boolean loginresult=true;
 		username=et_loginusernum.getText().toString().trim();
 		userpasw=et_loginpasword.getText().toString().trim();
-		loginresult=loginCheck(username,userpasw);
+		//登录校验
+		loginresult=loginCheckFun(username,userpasw,serverpath);
 		if(loginresult){
-			//saveUserData();
+			saveUserData();
 			Intent intent = new Intent();
 			intent.setClass(getApplicationContext(), MyCenterActivity.class);
 			startActivity(intent);
+			this.finish();
 		}
 	}
 	/**
-	 * 登陆校验
+	 * 登录校验方法
 	 * @param name
 	 * @param pswd
 	 * @return
 	 */
-	private boolean loginCheck(String name,String pswd){
-		return true;
+	private boolean loginCheckFun(String name,String pswd,String path){
+		if(name.equals("")||pswd.equals("")||path.equals("")){
+			Toast.makeText(getApplicationContext(), "用户名/密码/服务器地址不能为空", Toast.LENGTH_LONG).show();
+			return false;
+		}
+		else{
+			return true;
+		}
 	}
 	/**
 	 * 保存用户名密码
@@ -120,5 +159,24 @@ public class LoginActivity extends FinalActivity {
 			startActivityForResult(intent, 1002);
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	public void alertDialog(String message) {
+		new AlertDialog.Builder(this)
+				.setTitle("提示")
+				.setMessage(message)
+				.setIcon(android.R.drawable.ic_dialog_info)
+				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						setResult(RESULT_OK);// 确定按钮事件
+						Intent intent=new Intent();
+						intent.setClass(getApplicationContext(), ConfigActivity.class);
+						startActivityForResult(intent, 1002);
+					}
+				})
+				.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int whichButton) {
+						// 取消按钮事件
+					}
+				}).show();
 	}
 }

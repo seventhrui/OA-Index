@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="#ffffff" >
@@ -10,8 +10,6 @@
         android:orientation="vertical"
         android:padding="10dip" >
 
-        <!-- View Title Label -->
-
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
@@ -19,18 +17,11 @@
             android:text=""
             android:textSize="25dip"
             android:textStyle="bold" />
-        <!-- 账号 Label -->
 
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="服务器地址" />
-        <!-- 账号 TextField -->
-
-        <EditText
-            android:id="@+id/et_serverpath"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content" />
 
         <LinearLayout
             android:id="@+id/btns1"
@@ -39,6 +30,13 @@
             android:gravity="center"
             android:orientation="horizontal" >
 
+            <!-- 服务器ip Label -->
+
+            <EditText
+                android:id="@+id/et_serverpath"
+                android:layout_width="0dip"
+                android:layout_height="wrap_content"
+                android:layout_weight="4" />
             <!-- 保存 -->
 
             <Button
@@ -48,16 +46,20 @@
                 android:layout_weight="1"
                 android:background="@null"
                 android:text="保存" />
-            <!-- 取消 -->
-
-            <Button
-                android:id="@+id/bt_Undo"
-                android:layout_width="0dip"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@null"
-                android:text="取消" />
         </LinearLayout>
     </LinearLayout>
 
-</ScrollView>
+    <LinearLayout
+        android:id="@+id/bottom_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:padding="10dip" >
+        <Button
+            android:id="@+id/bt_logout"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:text="注销" />
+    </LinearLayout>
+</RelativeLayout>

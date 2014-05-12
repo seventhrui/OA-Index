@@ -39,4 +39,8 @@
     <string name="activity_draft">草稿箱</string>
     <!-- 回收箱 -->
     <string name="activity_waste">草稿箱</string>
+    
+    <string name="timeout">连接超时，请重试</string>
+    <string name="returnexit">再按一次退出程序</string>
+    <string name="action_logout">注销</string>
 </resources>
