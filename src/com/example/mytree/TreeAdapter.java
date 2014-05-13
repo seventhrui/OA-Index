@@ -166,7 +166,7 @@ public class TreeAdapter extends BaseAdapter{
 
 		ViewItem vi = null;
 		if(view == null){
-			view = lif.inflate(R.layout.item_list_contactsnode, null);
+			view = lif.inflate(R.layout.item_listview_contactsnode, null);
 			vi = new ViewItem();
 			vi.cb = (CheckBox)view.findViewById(R.id.cb);
 			vi.flagIcon = (ImageView)view.findViewById(R.id.ivec);

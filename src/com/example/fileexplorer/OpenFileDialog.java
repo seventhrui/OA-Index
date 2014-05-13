@@ -45,8 +45,7 @@ public class OpenFileDialog {
 			String title, CallbackBundle callback, String suffix,
 			Map<String, Integer> images) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-		builder.setView(new FileSelectView(type, context, id, callback, suffix,
-				images));
+		builder.setView(new FileSelectView(type, context, id, callback, suffix,	images));
 		Dialog dialog = builder.create();
 		// dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
 		dialog.setTitle(title);

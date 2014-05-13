@@ -34,11 +34,12 @@ import android.widget.TextView;
  * 开始菜单
  */
 public class StartMenuActivity extends FinalActivity implements OnTouchListener {
-	private static final int AVTIVITY_NEWMESSAGE=1;//新信息
-	private static final int AVTIVITY_INBOXMESSA=2;//收件箱
-	private static final int AVTIVITY_OUTBOXMESS=3;//发件箱
-	private static final int AVTIVITY_DRAFTMESSA=4;//草稿箱
-	private static final int AVTIVITY_WASTEMESSA=5;//回收箱
+	private static final int ACTIVITY_NEWMESSAGE=1;//新信息
+	private static final int ACTIVITY_INBOXMESSA=2;//收件箱
+	private static final int ACTIVITY_OUTBOXMESS=3;//发件箱
+	private static final int ACTIVITY_DRAFTMESSA=4;//草稿箱
+	private static final int ACTIVITY_WASTEMESSA=5;//回收箱
+	private static final int ACTIVITY_REQUELEAVE=7;//请假条
 	private static final int SNAP_VELOCITY = 200;//滚动显示和隐藏menu时，手指滑动需要达到的速度。
 	private int screenWidth;//屏幕宽度值。
 	private int leftEdge;//menu最多可以滑动到的左边缘。值由menu布局的宽度来定，marginLeft到达此值之后，不能再减少。
@@ -60,7 +61,7 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_start);
+		setContentView(R.layout.activity_startmenu);
 		initValues();
 	}
 
@@ -78,7 +79,7 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 		// 左边缘的值赋值为menu宽度的负数
 		leftEdge = -menuParams.width;
 		// menu的leftMargin设置为左边缘的值，这样初始化时menu就变为不可见
-		// menuParams.leftMargin = leftEdge;
+		//menuParams.leftMargin = leftEdge;
 		// 将content的宽度设置为屏幕宽度
 		content.getLayoutParams().width = screenWidth;
 		content.setOnTouchListener(this);
@@ -137,15 +138,17 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 		HashMap<String, Object> item = (HashMap<String, Object>) arg0.getItemAtPosition(arg2);
 		String imgName = (String) item.get("ItemText");
 		if (imgName.equals("新信息")) {
-			handler.sendEmptyMessage(AVTIVITY_NEWMESSAGE);
+			handler.sendEmptyMessage(ACTIVITY_NEWMESSAGE);
 		} else if (imgName.equals("已收信息")) {
-			handler.sendEmptyMessage(AVTIVITY_INBOXMESSA);
+			handler.sendEmptyMessage(ACTIVITY_INBOXMESSA);
 		} else if (imgName.equals("已发信息")) {
-			handler.sendEmptyMessage(AVTIVITY_OUTBOXMESS);
+			handler.sendEmptyMessage(ACTIVITY_OUTBOXMESS);
 		} else if (imgName.equals("信息草稿")) {
-			handler.sendEmptyMessage(AVTIVITY_DRAFTMESSA);
+			handler.sendEmptyMessage(ACTIVITY_DRAFTMESSA);
 		} else if (imgName.equals("信息回收")) {
-			handler.sendEmptyMessage(AVTIVITY_WASTEMESSA);
+			handler.sendEmptyMessage(ACTIVITY_WASTEMESSA);
+		} else if (imgName.equals("我要请假")){
+			handler.sendEmptyMessage(ACTIVITY_REQUELEAVE);
 		} else {
 			handler.sendEmptyMessage(50);
 		}
@@ -336,20 +339,23 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 			super.handleMessage(msg);
 			Intent intent = new Intent();
 			switch (msg.what) {
-			case AVTIVITY_NEWMESSAGE:
+			case ACTIVITY_NEWMESSAGE:
 				intent.setClass(getApplicationContext(),MessageNewActivity.class);
 				break;
-			case AVTIVITY_INBOXMESSA:
+			case ACTIVITY_INBOXMESSA:
 				intent.setClass(getApplicationContext(), InboxListAvtivity.class);
 				break;
-			case AVTIVITY_OUTBOXMESS:
+			case ACTIVITY_OUTBOXMESS:
 				intent.setClass(getApplicationContext(), OutboxListAvtivity.class);
 				break;
-			case AVTIVITY_DRAFTMESSA:
+			case ACTIVITY_DRAFTMESSA:
 				intent.setClass(getApplicationContext(), DraftListAvtivity.class);
 				break;
-			case AVTIVITY_WASTEMESSA:
+			case ACTIVITY_WASTEMESSA:
 				intent.setClass(getApplicationContext(), WasteListAvtivity.class);
+				break;
+			case ACTIVITY_REQUELEAVE:
+				intent.setClass(getApplicationContext(), RequestLeaveActivity.class);
 				break;
 			default:
 				intent.setClass(getApplicationContext(), Other.class);

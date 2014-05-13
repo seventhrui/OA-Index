@@ -10,7 +10,7 @@
         android:orientation="vertical" >
 
         <TextView
-            android:id="@+id/tv_inbox"
+            android:id="@+id/tv_draft"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content" />
 

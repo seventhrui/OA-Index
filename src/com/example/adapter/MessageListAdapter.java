@@ -48,7 +48,7 @@ public class MessageListAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(
-					R.layout.item_list_messagelist, null);
+					R.layout.item_listview_messagelist, null);
 		}
 		//tv_message_id 用于确定信息唯一
 		TextView tv_message_id = (TextView) convertView

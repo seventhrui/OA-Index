@@ -283,11 +283,10 @@ public class MyCenterActivity extends MyBaseActivity {
 	}
 	@Override//
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Toast.makeText(getApplicationContext(), item.getTitle().toString().trim(), Toast.LENGTH_SHORT).show();
 		if (item.getTitle().toString().trim().equals("刷新")) {
 			handlerDownload.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
 		}
-		else if (item.getTitle().toString().trim().equals("菜单")){
+		else if (item.getTitle().toString().trim().equals("开始菜单")){
 			this.finish();
 			Intent intent=new Intent();
 			intent.setClass(getApplicationContext(), StartMenuActivity.class);

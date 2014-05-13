@@ -61,6 +61,9 @@
         <activity 
             android:name="com.example.activity.StartMenuActivity"
             android:label="@string/action_startmenu"/>
+        <activity
+            android:name="com.example.activity.RequestLeaveActivity"
+            android:label="@string/activity_requestleave"/>
         <activity android:name="com.example.activity.Other" />
     </application>
 

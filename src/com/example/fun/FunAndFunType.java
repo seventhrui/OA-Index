@@ -42,7 +42,7 @@ public class FunAndFunType {
 			lstImageItem.add(map);
 		}
 		SimpleAdapter saImageItems = new SimpleAdapter(context, lstImageItem,
-				R.layout.item_grid_view,
+				R.layout.item_grid_startmenu,
 				new String[] { "ItemImage", "ItemText" }, new int[] {
 						R.id.ItemImage, R.id.ItemText });
 		return saImageItems;
@@ -64,7 +64,7 @@ public class FunAndFunType {
 			lstImageItem.add(map);
 		}
 		SimpleAdapter saImageItems = new SimpleAdapter(context, lstImageItem,
-				R.layout.item_grid_view,
+				R.layout.item_grid_startmenu,
 				new String[] { "ItemImage", "ItemText" }, new int[] {
 						R.id.ItemImage, R.id.ItemText });
 		return saImageItems;
@@ -86,7 +86,7 @@ public class FunAndFunType {
 			lstImageItem.add(map);
 		}
 		SimpleAdapter saImageItems = new SimpleAdapter(context, lstImageItem,
-				R.layout.item_grid_view,
+				R.layout.item_grid_startmenu,
 				new String[] { "ItemImage", "ItemText" }, new int[] {
 						R.id.ItemImage, R.id.ItemText });
 		return saImageItems;
@@ -108,7 +108,7 @@ public class FunAndFunType {
 			lstImageItem.add(map);
 		}
 		SimpleAdapter saImageItems = new SimpleAdapter(context, lstImageItem,
-				R.layout.item_grid_view,
+				R.layout.item_grid_startmenu,
 				new String[] { "ItemImage", "ItemText" }, new int[] {
 						R.id.ItemImage, R.id.ItemText });
 		return saImageItems;
@@ -130,7 +130,7 @@ public class FunAndFunType {
 			lstImageItem.add(map);
 		}
 		SimpleAdapter saImageItems = new SimpleAdapter(context, lstImageItem,
-				R.layout.item_grid_view,
+				R.layout.item_grid_startmenu,
 				new String[] { "ItemImage", "ItemText" }, new int[] {
 						R.id.ItemImage, R.id.ItemText });
 		return saImageItems;
@@ -152,7 +152,7 @@ public class FunAndFunType {
 			lstImageItem.add(map);
 		}
 		SimpleAdapter saImageItems = new SimpleAdapter(context, lstImageItem,
-				R.layout.item_grid_view,
+				R.layout.item_grid_startmenu,
 				new String[] { "ItemImage", "ItemText" }, new int[] {
 						R.id.ItemImage, R.id.ItemText });
 		return saImageItems;
@@ -174,7 +174,7 @@ public class FunAndFunType {
 			lstImageItem.add(map);
 		}
 		SimpleAdapter saImageItems = new SimpleAdapter(context, lstImageItem,
-				R.layout.item_grid_view,
+				R.layout.item_grid_startmenu,
 				new String[] { "ItemImage", "ItemText" }, new int[] {
 						R.id.ItemImage, R.id.ItemText });
 		return saImageItems;
