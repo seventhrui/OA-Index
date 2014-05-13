@@ -33,7 +33,7 @@ import net.tsz.afinal.annotation.view.ViewInject;
 /**
  * 收件箱
  */
-public class InboxListAvtivity extends FinalActivity {
+public class MessageInboxListAvtivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
     @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_messages;
     private final static int DOWNLOAD_MESSAGE_BEGIN=0;//下载信息
@@ -167,7 +167,7 @@ public class InboxListAvtivity extends FinalActivity {
 	 */
 	private void showDownloadDialog(boolean b){
 		if(b)
-			dialog=ProgressDialog.show(InboxListAvtivity.this,"正在加载...","请稍后",true,true);//显示下载进程对话框
+			dialog=ProgressDialog.show(MessageInboxListAvtivity.this,"正在加载...","请稍后",true,true);//显示下载进程对话框
 		else
 			dialog.dismiss();//下载进程对话框消失
 	}

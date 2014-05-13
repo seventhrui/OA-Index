@@ -38,9 +38,14 @@
     <!-- 草稿箱 -->
     <string name="activity_draft">草稿箱</string>
     <!-- 回收箱 -->
-    <string name="activity_waste">草稿箱</string>
+    <string name="activity_waste">回收箱</string>
     <!-- 请假条 -->
     <string name="activity_requestleave">请假条</string>
+    <!-- 工作写实 -->
+    <string name="activity_workrecord">工作写实</string>
+    <!-- 计划总结 -->
+    <string name="activity_plansummary">计划总结</string>
+    
     <string name="timeout">连接超时，请重试</string>
     <string name="returnexit">再按一次退出程序</string>
     <string name="action_logout">注销</string>

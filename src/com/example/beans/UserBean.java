@@ -5,6 +5,12 @@ package com.example.beans;
 
 import net.tsz.afinal.annotation.sqlite.Id;
 import net.tsz.afinal.annotation.sqlite.Table;
+/**
+ * userid 联系人id<br/>
+ * username 联系人名称<br/>
+ * userorga 联系人所属机构编号<br/>
+ *
+ */
 @Table(name = "oa_users")
 public class UserBean {
 	@Id(column="userid")//自定义主键名称

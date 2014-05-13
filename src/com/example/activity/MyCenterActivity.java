@@ -208,7 +208,7 @@ public class MyCenterActivity extends MyBaseActivity {
 			Intent intent=new Intent();
 			switch (msg.what) {
 			case COMMECTION:
-				intent.setClass(getApplicationContext(), InboxListAvtivity.class);
+				intent.setClass(getApplicationContext(), MessageInboxListAvtivity.class);
 				break;
 			case NOTIFICATION:
 				intent.setClass(getApplicationContext(), Other.class);
@@ -220,7 +220,7 @@ public class MyCenterActivity extends MyBaseActivity {
 				intent.setClass(getApplicationContext(), Other.class);
 				break;
 			case KNOWLEDGE:
-				intent.setClass(getApplicationContext(), Other.class);
+				intent.setClass(getApplicationContext(), KnowledgeListActivity.class);
 				break;
 			}
 			startActivity(intent);

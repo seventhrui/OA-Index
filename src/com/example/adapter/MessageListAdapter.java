@@ -1,6 +1,3 @@
-/**
- * 个人中心列表adapter
- */
 package com.example.adapter;
 
 import java.util.List;
@@ -15,7 +12,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
+/**
+ * 个人中心列表adapter
+ */
 public class MessageListAdapter extends BaseAdapter {
 
 	private Context context;

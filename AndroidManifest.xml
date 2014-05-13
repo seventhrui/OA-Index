@@ -35,7 +35,7 @@
             android:name="com.example.activity.MessageNewActivity"
             android:label="@string/activity_newmessage"/>
         <activity
-            android:name="com.example.activity.InboxListAvtivity"
+            android:name="com.example.activity.MessageInboxListAvtivity"
             android:label="@string/activity_inbox" />
         <activity
             android:name="com.example.activity.MessageShowActivity"
@@ -64,6 +64,9 @@
         <activity
             android:name="com.example.activity.RequestLeaveActivity"
             android:label="@string/activity_requestleave"/>
+        <activity 
+            android:name="com.example.activity.KnowledgeListActivity"
+            android:label="@string/knowledge"/>
         <activity android:name="com.example.activity.Other" />
     </application>
 

@@ -1,4 +1,3 @@
-// filename: CallbackBundle.java
 package com.example.fileexplorer;
 
 import android.os.Bundle;

@@ -1,11 +1,10 @@
+package com.example.beans;
 /**
  * 个人中心<br/>
  * 功能<br/>
  * 记录总数<br/>
  * 未看条数<br/>
  */
-package com.example.beans;
-
 public class MyCenterBeans {
 	private String mycenter_type;
 	private int mycenter_unread;

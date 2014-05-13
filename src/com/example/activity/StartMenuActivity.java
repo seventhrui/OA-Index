@@ -343,7 +343,7 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 				intent.setClass(getApplicationContext(),MessageNewActivity.class);
 				break;
 			case ACTIVITY_INBOXMESSA:
-				intent.setClass(getApplicationContext(), InboxListAvtivity.class);
+				intent.setClass(getApplicationContext(), MessageInboxListAvtivity.class);
 				break;
 			case ACTIVITY_OUTBOXMESS:
 				intent.setClass(getApplicationContext(), OutboxListAvtivity.class);

@@ -1,5 +1,10 @@
 package com.example.beans;
-
+/**
+ * 用户登录信息
+ * 用户名
+ * 用户id
+ * 服务器ip
+ */
 public class LoginConfig {
 	String username = null;
 	String userid=null;

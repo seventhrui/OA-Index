@@ -5,7 +5,14 @@ package com.example.beans;
 
 import net.tsz.afinal.annotation.sqlite.Id;
 import net.tsz.afinal.annotation.sqlite.Table;
-
+/**
+ * 组织机构
+ * organizationid 组织机构id<br/>
+ * organizationname 组织机构名称<br/>
+ * organizationgdepth 组织机构深度<br/>
+ * organizationparent 组织机构父节点编号<br/>
+ *
+ */
 @Table(name = "oa_organization")//设置表名
 public class OrganizationBean {
 	@Id(column="organizationid")//设置主键

@@ -8,7 +8,10 @@ import com.example.oa_index.R;
 
 import android.content.Context;
 import android.widget.SimpleAdapter;
-
+/**
+ * 开始菜单元素
+ *
+ */
 public class FunAndFunType {
 	static ArrayList<HashMap<String, Object>> lstImageItem =null;
 	/**
