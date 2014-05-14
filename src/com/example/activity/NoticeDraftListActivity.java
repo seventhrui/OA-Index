@@ -28,9 +28,9 @@ import net.tsz.afinal.FinalActivity;
 import net.tsz.afinal.FinalDb;
 import net.tsz.afinal.annotation.view.ViewInject;
 /**
- * 通知通告列表
+ * 通知通告草稿
  */
-public class NoticeListActivity extends FinalActivity {
+public class NoticeDraftListActivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
     @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_notice;
     private final static int DOWNLOAD_NOTICE_BEGIN=0;//下载通知通告

@@ -28,6 +28,21 @@
         <activity 
             android:name="com.example.activity.ConfigActivity"
             android:label="@string/action_setting"/>
+        <activity
+            android:name="com.example.activity.NoticeNewActivity"
+            android:label="@string/activity_noticenew" />
+        <activity 
+            android:name="com.example.activity.NoticeDraftListActivity"
+            android:label="@string/activity_noticedraft" />
+        <activity
+            android:name="com.example.activity.NoticeListActivity"
+            android:label="@string/activity_noticelist" />
+        <activity 
+            android:name="com.example.activity.NoticeOutboxListActivity"
+            android:label="@string/activity_noticelist" />
+        <activity
+            android:name="com.example.activity.NoticeShowActivity"
+            android:label="@string/notification"/>
         <activity 
             android:name="com.example.activity.MyCenterActivity" 
             android:label="@string/activity_mycenter"/>

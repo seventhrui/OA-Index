@@ -34,12 +34,16 @@ import android.widget.TextView;
  * 开始菜单
  */
 public class StartMenuActivity extends FinalActivity implements OnTouchListener {
-	private static final int ACTIVITY_NEWMESSAGE=1;//新信息
-	private static final int ACTIVITY_INBOXMESSA=2;//收件箱
-	private static final int ACTIVITY_OUTBOXMESS=3;//发件箱
-	private static final int ACTIVITY_DRAFTMESSA=4;//草稿箱
-	private static final int ACTIVITY_WASTEMESSA=5;//回收箱
-	private static final int ACTIVITY_REQUELEAVE=7;//请假条
+	private static final int ACTIVITY_NOTICENEW=11;//新建通知
+	private static final int ACTIVITY_NOTICDRAFT=12;//通知草稿
+	private static final int ACTIVITY_NOTICELIST=13;//通知列表
+	private static final int ACTIVITY_NOTIOUTBOX=14;//通知已发
+	private static final int ACTIVITY_MESSAGENEW=21;//新键信息
+	private static final int ACTIVITY_MESSAINBOX=22;//信息收件箱
+	private static final int ACTIVITY_MESSOUTBOX=23;//信息发件箱
+	private static final int ACTIVITY_MESSADRAFT=24;//信息草稿箱
+	private static final int ACTIVITY_MESSAWASTE=25;//信息回收箱
+	private static final int ACTIVITY_REQUELEAVE=31;//请假条
 	private static final int SNAP_VELOCITY = 200;//滚动显示和隐藏menu时，手指滑动需要达到的速度。
 	private int screenWidth;//屏幕宽度值。
 	private int leftEdge;//menu最多可以滑动到的左边缘。值由menu布局的宽度来定，marginLeft到达此值之后，不能再减少。
@@ -137,16 +141,24 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 	public void onClick_ChoiceFuns(AdapterView<?> arg0, View arg1, int arg2,long arg3) {
 		HashMap<String, Object> item = (HashMap<String, Object>) arg0.getItemAtPosition(arg2);
 		String imgName = (String) item.get("ItemText");
-		if (imgName.equals("新信息")) {
-			handler.sendEmptyMessage(ACTIVITY_NEWMESSAGE);
+		if (imgName.equals("发布通知")) {
+			handler.sendEmptyMessage(ACTIVITY_NOTICENEW);
+		} else if (imgName.equals("通知草稿")){
+			handler.sendEmptyMessage(ACTIVITY_NOTICDRAFT);
+		} else if (imgName.equals("通知列表")){
+			handler.sendEmptyMessage(ACTIVITY_NOTICELIST);
+		} else if (imgName.equals("通知已发")){
+			handler.sendEmptyMessage(ACTIVITY_NOTIOUTBOX);
+		} else if (imgName.equals("新信息")) {
+			handler.sendEmptyMessage(ACTIVITY_MESSAGENEW);
 		} else if (imgName.equals("已收信息")) {
-			handler.sendEmptyMessage(ACTIVITY_INBOXMESSA);
+			handler.sendEmptyMessage(ACTIVITY_MESSAINBOX);
 		} else if (imgName.equals("已发信息")) {
-			handler.sendEmptyMessage(ACTIVITY_OUTBOXMESS);
+			handler.sendEmptyMessage(ACTIVITY_MESSOUTBOX);
 		} else if (imgName.equals("信息草稿")) {
-			handler.sendEmptyMessage(ACTIVITY_DRAFTMESSA);
+			handler.sendEmptyMessage(ACTIVITY_MESSADRAFT);
 		} else if (imgName.equals("信息回收")) {
-			handler.sendEmptyMessage(ACTIVITY_WASTEMESSA);
+			handler.sendEmptyMessage(ACTIVITY_MESSAWASTE);
 		} else if (imgName.equals("我要请假")){
 			handler.sendEmptyMessage(ACTIVITY_REQUELEAVE);
 		} else {
@@ -339,19 +351,31 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 			super.handleMessage(msg);
 			Intent intent = new Intent();
 			switch (msg.what) {
-			case ACTIVITY_NEWMESSAGE:
+			case ACTIVITY_NOTICENEW:
+				intent.setClass(getApplicationContext(), NoticeNewActivity.class);
+				break;
+			case ACTIVITY_NOTICDRAFT:
+				intent.setClass(getApplicationContext(),NoticeDraftListActivity.class);
+				break;
+			case ACTIVITY_NOTICELIST:
+				intent.setClass(getApplicationContext(), NoticeListActivity.class);
+				break;
+			case ACTIVITY_NOTIOUTBOX:
+				intent.setClass(getApplicationContext(), NoticeOutboxListActivity.class);
+				break;
+			case ACTIVITY_MESSAGENEW:
 				intent.setClass(getApplicationContext(),MessageNewActivity.class);
 				break;
-			case ACTIVITY_INBOXMESSA:
+			case ACTIVITY_MESSAINBOX:
 				intent.setClass(getApplicationContext(), MessageInboxListAvtivity.class);
 				break;
-			case ACTIVITY_OUTBOXMESS:
+			case ACTIVITY_MESSOUTBOX:
 				intent.setClass(getApplicationContext(), MessageOutboxListAvtivity.class);
 				break;
-			case ACTIVITY_DRAFTMESSA:
+			case ACTIVITY_MESSADRAFT:
 				intent.setClass(getApplicationContext(), MessageDraftListAvtivity.class);
 				break;
-			case ACTIVITY_WASTEMESSA:
+			case ACTIVITY_MESSAWASTE:
 				intent.setClass(getApplicationContext(), MseeageWasteListAvtivity.class);
 				break;
 			case ACTIVITY_REQUELEAVE:

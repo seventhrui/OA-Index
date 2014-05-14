@@ -211,7 +211,7 @@ public class MyCenterActivity extends MyBaseActivity {
 				intent.setClass(getApplicationContext(), MessageInboxListAvtivity.class);
 				break;
 			case NOTIFICATION:
-				intent.setClass(getApplicationContext(), Other.class);
+				intent.setClass(getApplicationContext(), NoticeListActivity.class);
 				break;
 			case WORKTASK:
 				intent.setClass(getApplicationContext(), Other.class);

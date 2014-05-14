@@ -19,6 +19,11 @@
     <string name="action_menu">菜单</string>
     <string name="action_startmenu">开始菜单</string>
     
+    <string name="activity_noticenew">发布通知</string>
+    <string name="activity_noticedraft">通知草稿</string>
+    <string name="activity_noticelist">通知列表</string>
+    <string name="activity_noticeoutbox">通知已发</string>
+    
     <string name="activity_newmessage">新信息</string>
     <string name="action_refresh">刷新</string>
     <string name="action_send">发送</string>
@@ -33,12 +38,10 @@
     <string name="action_transpond">转发</string>
     <string name="action_delete">删除</string>
     <string name="activity_contacts">联系人</string>
-    <!-- 发件箱 -->
     <string name="activity_outbox">发件箱</string>
-    <!-- 草稿箱 -->
     <string name="activity_draft">草稿箱</string>
-    <!-- 回收箱 -->
     <string name="activity_waste">回收箱</string>
+    
     <!-- 请假条 -->
     <string name="activity_requestleave">请假条</string>
     <!-- 工作写实 -->
