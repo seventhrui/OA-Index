@@ -46,6 +46,7 @@
     <!-- 计划总结 -->
     <string name="activity_plansummary">计划总结</string>
     
+    <string name="activity_showknowledge">知识详情</string>
     <string name="timeout">连接超时，请重试</string>
     <string name="returnexit">再按一次退出程序</string>
     <string name="action_logout">注销</string>

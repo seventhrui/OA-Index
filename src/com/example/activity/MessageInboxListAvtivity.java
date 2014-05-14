@@ -53,7 +53,7 @@ public class MessageInboxListAvtivity extends FinalActivity {
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_inboxlist);
+        setContentView(R.layout.activity_message_inboxlist);
         db = FinalDb.create(this);
         initView();
         //ÏÂÔØÏûÏ¢

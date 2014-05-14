@@ -45,7 +45,7 @@ public class DraftListAvtivity extends FinalActivity {
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_draftlist);
+        setContentView(R.layout.activity_message_draftlist);
         handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
         db = FinalDb.create(this);
         initView();

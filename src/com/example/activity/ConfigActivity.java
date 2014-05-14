@@ -1,7 +1,5 @@
 package com.example.activity;
-/**
- * 参数配置页面
- */
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -16,7 +14,9 @@ import com.example.oa_index.R;
 
 import net.tsz.afinal.FinalActivity;
 import net.tsz.afinal.annotation.view.ViewInject;
-
+/**
+ * 参数配置页面
+ */
 public class ConfigActivity extends FinalActivity {
 	@ViewInject(id = R.id.et_serverpath) EditText et_serverpath;// 服务器地址
 	@ViewInject(id = R.id.bt_saveconfig, click = "onClick_saveConfig") Button bt_saveconfig;// 保存按钮

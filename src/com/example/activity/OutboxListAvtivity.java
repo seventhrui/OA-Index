@@ -45,7 +45,7 @@ public class OutboxListAvtivity extends FinalActivity {
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_outboxlist);
+        setContentView(R.layout.activity_message_outboxlist);
         handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
         db = FinalDb.create(this);
         initView();
