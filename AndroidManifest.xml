@@ -41,13 +41,13 @@
             android:name="com.example.activity.MessageShowActivity"
             android:label="@string/activity_showmessage" />
         <activity
-            android:name="com.example.activity.OutboxListAvtivity"
+            android:name="com.example.activity.MessageOutboxListAvtivity"
             android:label="@string/activity_outbox"/>
         <activity 
-            android:name="com.example.activity.DraftListAvtivity"
+            android:name="com.example.activity.MessageDraftListAvtivity"
             android:label="@string/activity_draft"/>
         <activity 
-            android:name="com.example.activity.WasteListAvtivity"
+            android:name="com.example.activity.MseeageWasteListAvtivity"
             android:label="@string/activity_waste"/>
         <activity 
             android:name="com.example.activity.MessageRepliesActivity"

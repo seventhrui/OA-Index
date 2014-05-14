@@ -30,7 +30,7 @@ import net.tsz.afinal.annotation.view.ViewInject;
 /**
  * ≤›∏Âœ‰
  */
-public class WasteListAvtivity extends FinalActivity {
+public class MessageDraftListAvtivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
     @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_messages;
     private final static int DOWNLOAD_MESSAGE_BEGIN=0;//œ¬‘ÿ–≈œ¢
@@ -45,7 +45,7 @@ public class WasteListAvtivity extends FinalActivity {
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message_wastelist);
+        setContentView(R.layout.activity_message_draftlist);
         handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
         db = FinalDb.create(this);
         initView();

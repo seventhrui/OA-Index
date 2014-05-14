@@ -30,7 +30,7 @@ import net.tsz.afinal.annotation.view.ViewInject;
 /**
  * 发件箱
  */
-public class OutboxListAvtivity extends FinalActivity {
+public class MessageOutboxListAvtivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
     @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_messages;
     private final static int DOWNLOAD_MESSAGE_BEGIN=0;//下载信息

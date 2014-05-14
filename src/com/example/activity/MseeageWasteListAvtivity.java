@@ -28,9 +28,9 @@ import net.tsz.afinal.FinalActivity;
 import net.tsz.afinal.FinalDb;
 import net.tsz.afinal.annotation.view.ViewInject;
 /**
- * 草稿箱
+ * 信息回收站
  */
-public class DraftListAvtivity extends FinalActivity {
+public class MseeageWasteListAvtivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
     @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_messages;
     private final static int DOWNLOAD_MESSAGE_BEGIN=0;//下载信息
@@ -45,7 +45,7 @@ public class DraftListAvtivity extends FinalActivity {
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message_draftlist);
+        setContentView(R.layout.activity_message_wastelist);
         handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
         db = FinalDb.create(this);
         initView();
@@ -81,7 +81,7 @@ public class DraftListAvtivity extends FinalActivity {
 	private Runnable downloadMessages = new Runnable() {
 		public void run() {
 			try {
-				Log.v("草稿箱", "下载数据");
+				Log.v("回收箱", "下载数据");
 				String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=2&uid=20121015095350990612c4db3cab4725";//内网ip
 				// 连接服务器成功之后，解析数据
 				String data = new HttpHelper(urlPath).readParse();
@@ -105,7 +105,7 @@ public class DraftListAvtivity extends FinalActivity {
 	 * 拆分信息字符串
 	 */
 	private List<MyMessageBean> splitMessageString(String str){
-		Log.v("草稿箱", "分割数据");
+		Log.v("回收箱", "分割数据");
 		List<MyMessageBean> mlist=new ArrayList<MyMessageBean>();
 		String[] messages=str.split("\\|");
 		for(String s:messages){
@@ -132,7 +132,7 @@ public class DraftListAvtivity extends FinalActivity {
     	if(state==STATE_MESSAGE_ALL){
     		messlist=db.findAll(MyMessageBean.class,"message_sendtime");
     	}
-    	Log.v("草稿箱数量", messlist.size()+"");
+    	Log.v("回收箱数量", messlist.size()+"");
     	mesladapter=new MessageListAdapter(getApplicationContext(), messlist);
     	mesladapter.notifyDataSetChanged();
 		lv_messages.setAdapter(mesladapter);
@@ -144,19 +144,19 @@ public class DraftListAvtivity extends FinalActivity {
 			int whatVal = msg.what;
 			switch (whatVal) {
 			case DOWNLOAD_MESSAGE_BEGIN:
-				Log.v("草稿箱", "下载开始");
+				Log.v("回收箱", "下载开始");
 				downloadMessage();
 				break;
 			case DOWNLOAD_MESSAGE_SUCCESS:
-				Log.v("草稿箱", "下载成功");
+				Log.v("回收箱", "下载成功");
 				saveData();
 				break;
 			case DOWNLOAD_MESSAGE_FAILURE:
-				Log.v("草稿箱", "下载失败");
+				Log.v("回收箱", "下载失败");
 				downloadMessage();
 				break;
 			case DATABASE_MESSAGE_SAVE:
-				Log.v("草稿箱", "保存数据");
+				Log.v("回收箱", "保存数据");
 				break;
 			}
 		}
