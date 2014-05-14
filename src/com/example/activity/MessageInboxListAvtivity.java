@@ -94,11 +94,10 @@ public class MessageInboxListAvtivity extends FinalActivity {
 				Log.v("收件箱", "下载数据");
 				String url=LoginConfig.getLoginConfig().getServerip();
 				String userid=LoginConfig.getLoginConfig().getUserid();
-				//String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=2&uid=20121015095350990612c4db3cab4725";//内网ip
 				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=2&uid="+userid;//内网ip
 				Log.v("信息地址", urlPath);
 				// 连接服务器成功之后，解析数据
-				String data = new HttpHelper(urlPath).readParse();
+				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
 					tv_inbox.setText("-1");
 					handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_FAILURE);
@@ -117,7 +116,6 @@ public class MessageInboxListAvtivity extends FinalActivity {
 			}
 			//下载进程对话框消失
 			showDownloadDialog(false);
-			//dialog.dismiss();
 		}
 	};
 	/**
@@ -267,7 +265,6 @@ public class MessageInboxListAvtivity extends FinalActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	//MyCenterActivity.dialog.dismiss();
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK

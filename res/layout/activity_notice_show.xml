@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 通知通告详情 -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tv_noticetitle"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="通知通告标题"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_noticesender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:hint="发布人"
+            android:singleLine="true"
+            android:textColor="#228B22" />
+
+        <TextView
+            android:id="@+id/tv_noticetime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="发送时间" />
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1px"
+            android:background="#000000" >
+        </View>
+
+        <WebView
+            android:id="@+id/wv_noticecontent"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/bt_noticefile"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:text="附件"
+            android:textColor="#21dbd4"
+            android:textStyle="bold" />
+    </LinearLayout>
+	
+</ScrollView>

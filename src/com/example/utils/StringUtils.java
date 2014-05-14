@@ -3,12 +3,16 @@
  */
 package com.example.utils;
 
-import java.util.ArrayList;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 import android.util.Log;
 
-import com.example.beans.MyMessageBean;
 
 public class StringUtils {
 	/**
@@ -67,5 +71,62 @@ public class StringUtils {
 	public static String[] splitStringByNot(String s){
 		Log.v("调试", "分割数据");
 		return s.split("\\^");
+	}
+	
+	/**
+	 * 把inputstream的信息 转化成byte[] 返回
+	 * @param is
+	 * @return
+	 * @throws Exception
+	 */
+	public static byte[] getStreamBytes(InputStream is) throws Exception{
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int len = 0;
+		while( (len = is.read(buffer))!=-1 ){
+			baos.write(buffer, 0, len);
+		}
+		byte[] result = baos.toByteArray();
+		is.close();
+		baos.close();
+		return result;
+	}
+	/**
+	 * 生成随机码--21+length
+	 * @param length
+	 * @return
+	 */
+	public static String GenerateGUID(int length) {
+		UUID uuid = UUID.randomUUID();
+		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyyMMddhhmmss");
+		String date = sDateFormat.format(new java.util.Date());
+		return date + uuid.toString().substring(0, 7) + randomString(length);
+	}
+	public static String randomString(int length) {
+		Random randGen=null;
+		char[] numbersAndLetters = null;
+		if (length < 1) {
+			return null;
+		}
+		
+		if (randGen == null) {
+			randGen = new Random();
+			numbersAndLetters = ("0123456789abcdefghijklmnopqrstuvwxyz"
+					+ "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ").toCharArray();
+		}
+		char[] randBuffer = new char[length];
+		for (int i = 0; i < randBuffer.length; i++) {
+			randBuffer[i] = numbersAndLetters[randGen.nextInt(71)];
+		}
+		return new String(randBuffer);
+	}
+	/**
+	 * 当前时间毫秒
+	 * @return
+	 */
+	public static String TimeString(){
+		Date dt= new Date();    
+		Long time= dt.getTime();
+		return time+"";
 	}
 }

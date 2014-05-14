@@ -139,7 +139,7 @@ public class MyCenterActivity extends MyBaseActivity {
 				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=2&uid="+userid;//内网ip
 				Log.v("个人中心", urlPath);
 				// 连接服务器成功之后，解析数据
-				String data = new HttpHelper(urlPath).readParse();
+				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
 					handlerDownload.sendEmptyMessage(DOWNLOAD_MESSAGE_FAILURE);
 				} 

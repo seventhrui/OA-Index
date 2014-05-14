@@ -7,6 +7,7 @@ package com.example.beans;
  */
 public class LoginConfig {
 	String username = null;
+	String myname= null;
 	String userid=null;
 	String serverip=null;
 	
@@ -18,6 +19,14 @@ public class LoginConfig {
 		this.username = username;
 	}
 
+	public String getMyname() {
+		return myname;
+	}
+
+	public void setMyname(String myname) {
+		this.myname = myname;
+	}
+	
 	public String getUserid() {
 		return userid;
 	}

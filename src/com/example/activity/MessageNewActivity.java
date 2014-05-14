@@ -1,16 +1,21 @@
 package com.example.activity;
 
+import java.io.File;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 import com.example.oa_index.R;
+import com.example.beans.LoginConfig;
 import com.example.fileexplorer.CallbackBundle;
 import com.example.fileexplorer.OpenFileDialog;
+import com.example.http.HttpHelper;
 import com.example.mytree.ContactsActivity;
 import com.example.utils.StringUtils;
 
 import android.app.ActionBar;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -33,12 +38,21 @@ import net.tsz.afinal.annotation.view.ViewInject;
 public class MessageNewActivity extends FinalActivity {
 	private final static int openfileDialogId = 0;
 	private final static int copyfileDialogId = 1;
-	private final static int SEND_MESSAGE=0;//发送信息
+	private final static int SEND_MESSAGE_BEGIN=0;//开始发送信息
+	private final static int SEND_MESSAGE_SUCCESS=1;//发送信息成功
+	private final static int SEND_MESSAGE_FAILURE=-1;//发送信息失败
+	private final static int SEND_FILE_BEGIN=2;//上传文件
+	private final static int SEND_FILE_SUCCESS=3;//发送文件成功
+	private final static int SEND_FILE_FAILURE=-3;//发送文件失败
+	private final static int CONNECTION_TIMEOUT=5;//连接超时
+	private String messageid="";
 	private String myname="";//用户名
 	private String messagetitle="";//信息主题
 	private String messagecontent="";//信息内容
-	private String receivers="";//收件人
+	private String receivers="";//收件人名称
+	private String receiverids="";//收件人id
 	private String filepath="";//附件路径
+	private String sendmessagecontent="";//发送消息内容
     @ViewInject(id=R.id.tv_messagereceiver) TextView tv_messagereceiver;
     @ViewInject(id=R.id.et_messagereceiver)	EditText et_messagereceiver;
     @ViewInject(id=R.id.bt_addreceiver,click="onClick_AddReceiver") ImageButton bt_addreceiver;
@@ -47,6 +61,7 @@ public class MessageNewActivity extends FinalActivity {
     @ViewInject(id=R.id.et_newcontent) EditText et_newcontent;
     @ViewInject(id=R.id.tv_filename) TextView tv_filename;
     @ViewInject(id=R.id.bt_searchfile,click="onClick_SearchFile") Button bt_searchfile;
+    private ProgressDialog dialog=null;//发送进程对话框
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,7 +72,7 @@ public class MessageNewActivity extends FinalActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.v("新信息联系人1",receivers);
+		Log.v("新信息联系人1",receiverids);
 		//填充收件人
 		et_messagereceiver.setText(receivers);
 	}
@@ -90,24 +105,143 @@ public class MessageNewActivity extends FinalActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1000 && resultCode == 1001)
         {
-        	receivers = data.getStringExtra("result");
-            Log.v("新信息联系人2",receivers);
+        	receivers = data.getStringExtra("resultnames");
+        	receiverids=data.getStringExtra("receiverids");
+            Log.v("新信息联系人2",receiverids);
             et_messagereceiver.setText(receivers);
         }
     }
 	
-	private Handler handler=new Handler(){
+	private Handler handlerSendMessage=new Handler(){
 		@Override
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case SEND_MESSAGE:
+			case SEND_MESSAGE_BEGIN:
+				showDownloadDialog(true);
+				sendMyMessage();
 				Toast.makeText(getApplicationContext(), "发送信息", Toast.LENGTH_SHORT).show();
+				break;
+			case SEND_MESSAGE_SUCCESS:
+				Toast.makeText(getApplicationContext(), "发送信息成功", Toast.LENGTH_SHORT).show();
+				showDownloadDialog(true);
+				sendMyFile();
+				break;
+			case SEND_MESSAGE_FAILURE:
+				Toast.makeText(getApplicationContext(), "发送信息失败", Toast.LENGTH_SHORT).show();
+				break;
+			case SEND_FILE_SUCCESS:
+				Toast.makeText(getApplicationContext(), "发送附件成功", Toast.LENGTH_SHORT).show();
+				break;
+			case SEND_FILE_FAILURE:
+				Toast.makeText(getApplicationContext(), "发送附件失败", Toast.LENGTH_SHORT).show();
+				break;
+			case CONNECTION_TIMEOUT:
+				Log.v("收件箱", "连接超时");
+				toastTimeOut();
 				break;
 			}
 		}
 	};
-	
+	private String getMessageContent(){
+		String contnet="";
+		String hasfile="0";
+		receivers=et_messagereceiver.getText().toString().trim();//收件人名称
+		//receiverids 收件人id
+		//myname 发件人名
+		messagetitle=et_messagetitle.getText().toString().trim();//信息标题
+		messagecontent=et_newcontent.getText().toString().trim();//信息内容
+		tv_filename.getText().toString().trim();//附件名
+		if(!tv_filename.equals(""))
+			hasfile="1";
+		messageid=StringUtils.GenerateGUID(11);//信息id
+		// 收件人ID|收件人名字|标题|内容|附件|消息ID
+		contnet=receiverids+"|"+receivers+"|"+messagetitle+"|"+messagecontent+"|"+hasfile+"|"+messageid;
+		return contnet;
+	}
+	/**
+	 * 发送信息
+	 */
+	private void sendMyMessage(){
+		new Thread(sendMessages).start();
+	}
+	/**
+	 * 发送消息
+	 */
+	private Runnable sendMessages = new Runnable() {
+		public void run() {
+			sendmessagecontent=getMessageContent();
+			try {
+				Log.v("新建信息", "发送数据");
+				String url=LoginConfig.getLoginConfig().getServerip();
+				String userid=LoginConfig.getLoginConfig().getUserid();
+				String myname=LoginConfig.getLoginConfig().getMyname();
+				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=3&uid="+userid+"&uname="+URLEncoder.encode(myname, "UTF-8");//内网ip
+				Log.v("信息地址", urlPath);
+				// 连接服务器成功之后，解析数据
+				String data = new HttpHelper(urlPath).doPostString(sendmessagecontent);
+				Log.v("发送返回值",data); 
+				if (data.equals("0")) {
+					handlerSendMessage.sendEmptyMessage(SEND_MESSAGE_FAILURE);
+				} 
+				else if (data.equals("1")){
+					handlerSendMessage.sendEmptyMessage(SEND_MESSAGE_SUCCESS);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				handlerSendMessage.sendEmptyMessage(CONNECTION_TIMEOUT);
+			}
+			//下载进程对话框消失
+			showDownloadDialog(false);
+		}
+	};
+	/**
+	 * 发送文件
+	 */
+	private void sendMyFile(){
+		new Thread(sendFile).start();
+	}
+	/**
+	 * 发送文件
+	 */
+	private Runnable sendFile=new Runnable() {
+		public void run() {
+			try{
+				File file=new File(filepath);
+				String filename=StringUtils.TimeString()+"$"+StringUtils.Path2FileName(filepath);
+				String url=LoginConfig.getLoginConfig().getServerip();
+				String urlPath="http://"+url+"/oa/ashx/Ioa.ashx?ot=4&mid="+messageid+"&fn="+filename;
+				Log.v("发送文件", urlPath);
+				String data = new HttpHelper(urlPath).uploadFile(file);
+				Log.v("发送返回值",data); 
+				if (data.equals("0")) {
+					handlerSendMessage.sendEmptyMessage(SEND_FILE_FAILURE);
+				} 
+				else if (data.equals("1")){
+					handlerSendMessage.sendEmptyMessage(SEND_FILE_SUCCESS);
+				}
+			}catch(Exception e){
+				handlerSendMessage.sendEmptyMessage(CONNECTION_TIMEOUT);
+			}
+			showDownloadDialog(false);
+		}
+		
+	};
+	/**
+	 * 下载进程对话框
+	 */
+	private void showDownloadDialog(boolean b){
+		if(b)
+			dialog=ProgressDialog.show(MessageNewActivity.this,"正在发送...","请稍后",true,true);//显示下载进程对话框
+		else
+			dialog.dismiss();//下载进程对话框消失
+	}
+	/**
+	 * 提示下载超时
+	 */
+	private void toastTimeOut(){
+		Toast.makeText(getApplicationContext(), R.string.timeout, Toast.LENGTH_LONG).show();
+	}
 	//文件资源管理器窗口
 	@Override
 	protected Dialog onCreateDialog(int id) {
@@ -158,7 +292,7 @@ public class MessageNewActivity extends FinalActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("发送")) {
-			handler.sendEmptyMessage(SEND_MESSAGE);
+			handlerSendMessage.sendEmptyMessage(SEND_MESSAGE_BEGIN);
 		}
 		else if (item.getItemId()==android.R.id.home){
 			this.finish();

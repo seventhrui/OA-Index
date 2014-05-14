@@ -28,7 +28,8 @@ public class MessageForwardActivity extends FinalActivity {
 	private String myname="";
 	private String messagetitle="";
 	private String originalcontent="";
-	private String receivers="";
+	private String receivers="";//收件人名称
+	private String receiverids="";//收件人id
     @ViewInject(id=R.id.tv_messagereceiver) TextView tv_messagereceiver;
     @ViewInject(id=R.id.et_messagereceiver)	public static EditText et_messagereceiver;
     @ViewInject(id=R.id.bt_addreceiver,click="onClick_AddReceiver") ImageButton bt_addreceiver;
@@ -46,7 +47,7 @@ public class MessageForwardActivity extends FinalActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.v("信息转发联系人",receivers);
+		Log.v("信息转发联系人",receiverids);
 		et_messagereceiver.setText(receivers);
 	}
 	private void initView(){
@@ -78,8 +79,9 @@ public class MessageForwardActivity extends FinalActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == 1000 && resultCode == 1001)
         {
-        	receivers = data.getStringExtra("result");
-            Log.v("信息转发联系人2",receivers);
+        	receivers = data.getStringExtra("resultnames");
+        	receiverids=data.getStringExtra("receiverids");
+            Log.v("信息转发联系人2",receiverids);
             et_messagereceiver.setText(receivers);
         }
     }

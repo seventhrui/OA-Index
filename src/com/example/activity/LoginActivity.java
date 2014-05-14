@@ -80,7 +80,8 @@ public class LoginActivity extends MyBaseActivity {
 		}
 		
 		LoginConfig.getLoginConfig().setUsername(username);
-		LoginConfig.getLoginConfig().setUserid("20121015095350990612c4db3cab4725");
+		LoginConfig.getLoginConfig().setMyname("ÍõÃ÷²©");
+		LoginConfig.getLoginConfig().setUserid("2012102615333148500096329d83070b");
 		LoginConfig.getLoginConfig().setServerip(serverpath);
 		
 		if(!username.equals("")&&!userpasw.equals("")&&!serverpath.equals("")){

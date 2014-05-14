@@ -8,6 +8,7 @@ import java.util.List;
 
 import net.tsz.afinal.FinalDb;
 
+import com.example.beans.LoginConfig;
 import com.example.beans.OrganizationBean;
 import com.example.beans.UserBean;
 import com.example.http.HttpHelper;
@@ -152,13 +153,14 @@ public class ContactsActivity extends Activity {
 	/**
 	 * 下载成员列表
 	 */
-	private Runnable downloaddictionary = new Runnable() {
+	private Runnable downloadReceiver = new Runnable() {
 		public void run() {
 			try {
 				Log.v("调试", "下载数据");
-				String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=1";// 内网ip
+				String url=LoginConfig.getLoginConfig().getServerip();
+				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=1";// 内网ip
 				// 连接服务器成功之后，解析数据
-				String data = new HttpHelper(urlPath).readParse();
+				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
 					handler.sendEmptyMessage(DOWNLOAD_ORGANANDUSER_FAILURE);
 				} else if (data.equals("0")) {
@@ -173,7 +175,7 @@ public class ContactsActivity extends Activity {
 	};
 
 	private void downloadData() {
-		new Thread(downloaddictionary).start();
+		new Thread(downloadReceiver).start();
 	}
 
 	private Handler handler = new Handler() {
@@ -217,21 +219,25 @@ public class ContactsActivity extends Activity {
 		}
 		else if (item.getTitle().toString().trim().equals("联系人")) {
 			List<Node> nodelist=null;
-			String receivers="";
+			String receivernames="";
+			String receiverids="";
 			try{
 				nodelist=listView.ta.getSelectedNode();
 				if(nodelist!= null){
 					nodelist=listView.ta.getSelectedNode();
 					for(Node n:nodelist){
-						receivers+=n.getTitle()+";";
+						receivernames+=n.getTitle()+",";
+						receiverids+=n.getValue()+",";
 					}
-					//MessageForwardActivity.et_messagereceiver.setText(receivers);
 				}
 			}catch(Exception e){
 				
 			}
+			receivernames=receivernames.substring(0,receivernames.length()-1);
+			receiverids=receiverids.substring(0,receiverids.length()-1);
 			Intent intent = new Intent();
-			intent.putExtra("result", receivers);
+			intent.putExtra("resultnames", receivernames);
+			intent.putExtra("receiverids", receiverids);
             setResult(1001, intent);
 
 			this.finish();

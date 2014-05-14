@@ -84,7 +84,7 @@ public class NoticeListActivity extends FinalActivity {
 				Log.v("通知通告发件箱", "下载数据");
 				String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=2&uid=20121015095350990612c4db3cab4725";//内网ip
 				// 连接服务器成功之后，解析数据
-				String data = new HttpHelper(urlPath).readParse();
+				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
 					tv_inbox.setText("-1");
 					handlerdealnotice.sendEmptyMessage(DOWNLOAD_NOTICE_FAILURE);

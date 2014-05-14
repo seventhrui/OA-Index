@@ -6,16 +6,19 @@ import java.util.List;
 
 import com.example.oa_index.R;
 import com.example.adapter.MessageListAdapter;
+import com.example.beans.LoginConfig;
 import com.example.beans.MyMessageBean;
 import com.example.db.OADBHelper;
 import com.example.http.HttpHelper;
 
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,7 +31,7 @@ import net.tsz.afinal.FinalActivity;
 import net.tsz.afinal.FinalDb;
 import net.tsz.afinal.annotation.view.ViewInject;
 /**
- * 草稿箱
+ * 信息草稿
  */
 public class MessageDraftListAvtivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
@@ -37,18 +40,23 @@ public class MessageDraftListAvtivity extends FinalActivity {
 	private final static int DOWNLOAD_MESSAGE_SUCCESS=1;//下载信息成功
 	private final static int DOWNLOAD_MESSAGE_FAILURE=-1;//下载信息失败
 	private final static int DATABASE_MESSAGE_SAVE=2;//保存信息数据
+	private final static int CONNECTION_TIMEOUT=3;//连接超时
 	private final static int STATE_MESSAGE_ALL=0;//全部
 	private String inboxresult="0";
 	private List<MyMessageBean> messagelist=null;//信息list
-	private MessageListAdapter mesladapter=null;
+	private MessageListAdapter mesladapter=null;//信息list适配器
 	private FinalDb db = null;
+	private ProgressDialog dialog=null;//下载进程对话框
+	
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message_draftlist);
-        handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
+        setContentView(R.layout.activity_message_outboxlist);
         db = FinalDb.create(this);
         initView();
+        //下载消息
+        handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
+        //handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
     }
 	private void initView(){
     	ActionBar actionbar=getActionBar();
@@ -81,10 +89,14 @@ public class MessageDraftListAvtivity extends FinalActivity {
 	private Runnable downloadMessages = new Runnable() {
 		public void run() {
 			try {
-				Log.v("草稿箱", "下载数据");
-				String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=2&uid=20121015095350990612c4db3cab4725";//内网ip
+				Log.v("信息草稿箱", "下载数据");
+				String url=LoginConfig.getLoginConfig().getServerip();
+				String userid=LoginConfig.getLoginConfig().getUserid();
+				//String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=2&uid=20121015095350990612c4db3cab4725";//内网ip
+				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=2&uid="+userid;//内网ip
+				Log.v("信息草稿地址", urlPath);
 				// 连接服务器成功之后，解析数据
-				String data = new HttpHelper(urlPath).readParse();
+				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
 					tv_inbox.setText("-1");
 					handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_FAILURE);
@@ -98,14 +110,19 @@ public class MessageDraftListAvtivity extends FinalActivity {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
+				handlerdealmessage.sendEmptyMessage(CONNECTION_TIMEOUT);
+				handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
 			}
+			//下载进程对话框消失
+			showDownloadDialog(false);
+			//dialog.dismiss();
 		}
 	};
 	/**
 	 * 拆分信息字符串
 	 */
 	private List<MyMessageBean> splitMessageString(String str){
-		Log.v("草稿箱", "分割数据");
+		Log.v("信息草稿箱", "分割数据");
 		List<MyMessageBean> mlist=new ArrayList<MyMessageBean>();
 		String[] messages=str.split("\\|");
 		for(String s:messages){
@@ -129,13 +146,26 @@ public class MessageDraftListAvtivity extends FinalActivity {
 	 */
 	private void fillMessageList(int state){
 		List<MyMessageBean> messlist=null;
-    	if(state==STATE_MESSAGE_ALL){
-    		messlist=db.findAll(MyMessageBean.class,"message_sendtime");
-    	}
-    	Log.v("草稿箱数量", messlist.size()+"");
+    	messlist=db.findAll(MyMessageBean.class,"message_sendtime");
+    	Log.v("信息草稿箱数量", messlist.size()+"");
     	mesladapter=new MessageListAdapter(getApplicationContext(), messlist);
     	mesladapter.notifyDataSetChanged();
 		lv_messages.setAdapter(mesladapter);
+	}
+	/**
+	 * 下载进程对话框
+	 */
+	private void showDownloadDialog(boolean b){
+		if(b)
+			dialog=ProgressDialog.show(MessageDraftListAvtivity.this,"正在加载...","请稍后",true,true);//显示下载进程对话框
+		else
+			dialog.dismiss();//下载进程对话框消失
+	}
+	/**
+	 * 提示下载超时
+	 */
+	private void toastTimeOut(){
+		Toast.makeText(getApplicationContext(), R.string.timeout, Toast.LENGTH_LONG).show();
 	}
 	//下载信息
 	private Handler handlerdealmessage=new Handler(){
@@ -144,19 +174,24 @@ public class MessageDraftListAvtivity extends FinalActivity {
 			int whatVal = msg.what;
 			switch (whatVal) {
 			case DOWNLOAD_MESSAGE_BEGIN:
-				Log.v("草稿箱", "下载开始");
+				Log.v("信息草稿箱", "下载开始");
+				showDownloadDialog(true);
 				downloadMessage();
 				break;
 			case DOWNLOAD_MESSAGE_SUCCESS:
-				Log.v("草稿箱", "下载成功");
+				Log.v("信息草稿箱", "下载成功");
 				saveData();
 				break;
 			case DOWNLOAD_MESSAGE_FAILURE:
-				Log.v("草稿箱", "下载失败");
+				Log.v("信息草稿箱", "下载失败");
 				downloadMessage();
 				break;
 			case DATABASE_MESSAGE_SAVE:
-				Log.v("草稿箱", "保存数据");
+				Log.v("信息草稿箱", "保存数据");
+				break;
+			case CONNECTION_TIMEOUT:
+				Log.v("信息草稿箱", "连接超时");
+				toastTimeOut();
 				break;
 			}
 		}
@@ -196,7 +231,6 @@ public class MessageDraftListAvtivity extends FinalActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("刷新")) {
-			Toast.makeText(getApplicationContext(), item.getTitle()+"", Toast.LENGTH_SHORT).show();
 			handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
 		}
 		//返回
@@ -204,5 +238,15 @@ public class MessageDraftListAvtivity extends FinalActivity {
 			this.finish();
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	//MyCenterActivity.dialog.dismiss();
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK
+				&& event.getAction() == KeyEvent.ACTION_DOWN) {
+			this.finish();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
 	}
 }
