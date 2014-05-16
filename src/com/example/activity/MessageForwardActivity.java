@@ -1,5 +1,6 @@
 package com.example.activity;
 
+import com.example.HandlerCode;
 import com.example.mytree.ContactsActivity;
 import com.example.oa_index.R;
 
@@ -24,18 +25,19 @@ import net.tsz.afinal.annotation.view.ViewInject;
  * 信息转发
  */
 public class MessageForwardActivity extends FinalActivity {
-	private final static int SEND_MESSAGE=0;//发送信息
-	private String myname="";
-	private String messagetitle="";
-	private String originalcontent="";
+	private String myname="";//发件人
+	private String messagetitle="";//信息标题
+	private String originalcontent="";//原信息内容
 	private String receivers="";//收件人名称
 	private String receiverids="";//收件人id
+	private String filename="";//附件名
     @ViewInject(id=R.id.tv_messagereceiver) TextView tv_messagereceiver;
     @ViewInject(id=R.id.et_messagereceiver)	public static EditText et_messagereceiver;
     @ViewInject(id=R.id.bt_addreceiver,click="onClick_AddReceiver") ImageButton bt_addreceiver;
     @ViewInject(id=R.id.tv_messagesender) TextView tv_messagesender;
     @ViewInject(id=R.id.tv_messagetitle) TextView tv_messagetitle;
     @ViewInject(id=R.id.wv_originalcontent) WebView wv_originalcontent;
+    @ViewInject(id=R.id.tv_filename) TextView tv_filename;
     
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,11 +59,13 @@ public class MessageForwardActivity extends FinalActivity {
 		myname=getIntent().getStringExtra("myname");
 		messagetitle=getIntent().getStringExtra("messagetitle");
 		originalcontent=getIntent().getStringExtra("messagecontent");
+		filename=getIntent().getStringExtra("messagefile");
 		tv_messagesender.setText(myname);
 		tv_messagetitle.setText(messagetitle);
 		if(originalcontent.isEmpty())
 			originalcontent=" ";
 		wv_originalcontent.loadDataWithBaseURL(null, originalcontent, "text/html", "utf-8", null);
+		tv_filename.setText(filename);
 	}
 	/**
 	 * 添加收件人
@@ -92,7 +96,7 @@ public class MessageForwardActivity extends FinalActivity {
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case SEND_MESSAGE:
+			case HandlerCode.SEND_MESSAGE_BEGIN:
 				Toast.makeText(getApplicationContext(), "发送信息", Toast.LENGTH_SHORT).show();
 				break;
 			}
@@ -101,13 +105,13 @@ public class MessageForwardActivity extends FinalActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_forwardmessage, menu);
+		getMenuInflater().inflate(R.menu.menu_message_forward, menu);
 		return true;
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("发送")) {
-			handler.sendEmptyMessage(SEND_MESSAGE);
+			handler.sendEmptyMessage(HandlerCode.SEND_MESSAGE_BEGIN);
 		}
 		else if (item.getItemId()==android.R.id.home){
 			this.finish();

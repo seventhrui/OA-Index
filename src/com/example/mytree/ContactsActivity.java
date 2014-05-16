@@ -1,6 +1,3 @@
-/**
- * 联系人树
- */
 package com.example.mytree;
 
 import java.util.ArrayList;
@@ -26,7 +23,9 @@ import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
-
+/**
+ * 联系人树
+ */
 public class ContactsActivity extends Activity {
 	private TreeListView listView;
 
@@ -233,13 +232,14 @@ public class ContactsActivity extends Activity {
 			}catch(Exception e){
 				
 			}
-			receivernames=receivernames.substring(0,receivernames.length()-1);
-			receiverids=receiverids.substring(0,receiverids.length()-1);
-			Intent intent = new Intent();
-			intent.putExtra("resultnames", receivernames);
-			intent.putExtra("receiverids", receiverids);
-            setResult(1001, intent);
-
+			if(!receivernames.equals("")){
+				receivernames=receivernames.substring(0,receivernames.length()-1);
+				receiverids=receiverids.substring(0,receiverids.length()-1);
+				Intent intent = new Intent();
+				intent.putExtra("resultnames", receivernames);
+				intent.putExtra("receiverids", receiverids);
+	            setResult(1001, intent);
+			}
 			this.finish();
 		}
 		return super.onOptionsItemSelected(item);

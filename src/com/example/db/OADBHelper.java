@@ -14,6 +14,8 @@ import com.example.beans.MyMessageBean;
 public class OADBHelper {
 	/**
 	 * 保存信息数据
+	 * @param mmblist
+	 * @param context
 	 */
 	public static void saveMessages(List<MyMessageBean> mmblist,Context context) {
 		FinalDb db = FinalDb.create(context);
@@ -23,6 +25,19 @@ public class OADBHelper {
 			}catch(Exception e){
 				
 			}
+		}
+	}
+	/**
+	 * 保存信息数据
+	 * @param mmb
+	 * @param context
+	 */
+	public static void saveMessage(MyMessageBean mmb,Context context){
+		FinalDb db = FinalDb.create(context);
+		try{
+			db.save(mmb);
+		}catch(Exception e){
+			
 		}
 	}
 }

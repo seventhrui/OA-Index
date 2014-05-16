@@ -166,7 +166,7 @@ public class MessageShowActivity extends FinalActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_showmessage, menu);
+		getMenuInflater().inflate(R.menu.menu_message_show, menu);
 		return true;
 	}
 	@Override
@@ -177,9 +177,10 @@ public class MessageShowActivity extends FinalActivity {
 			Intent intent=new Intent();
 			intent.setClass(getApplicationContext(), MessageRepliesActivity.class);
 			Bundle bundle=new Bundle();
-			bundle.putString("myname", "张三");
+			bundle.putString("myname", myname);
 			bundle.putString("messagesender", tv_messagesender.getText().toString().trim());
 			bundle.putString("messagetitle", tv_messagetitle.getText().toString().trim());
+			bundle.putString("messagecontent", messagecontent);
 			intent.putExtras(bundle);
 			startActivity(intent);
 		}
@@ -189,9 +190,10 @@ public class MessageShowActivity extends FinalActivity {
 			Intent intent=new Intent();
 			intent.setClass(getApplicationContext(), MessageForwardActivity.class);
 			Bundle bundle=new Bundle();
-			bundle.putString("myname", "张三");
+			bundle.putString("myname", myname);
 			bundle.putString("messagetitle", tv_messagetitle.getText().toString().trim());
 			bundle.putString("messagecontent", messagecontent);
+			bundle.putString("messagefile", filename);
 			intent.putExtras(bundle);
 			startActivity(intent);
 		}

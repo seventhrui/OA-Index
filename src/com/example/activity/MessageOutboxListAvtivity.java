@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.StateCode;
 import com.example.oa_index.R;
 import com.example.adapter.MessageListAdapter;
 import com.example.beans.LoginConfig;
@@ -55,8 +56,8 @@ public class MessageOutboxListAvtivity extends FinalActivity {
         db = FinalDb.create(this);
         initView();
         //下载消息
-        handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
-        //handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
+        //handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
+        handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
     }
 	private void initView(){
     	ActionBar actionbar=getActionBar();
@@ -127,7 +128,7 @@ public class MessageOutboxListAvtivity extends FinalActivity {
 		String[] messages=str.split("\\|");
 		for(String s:messages){
 			String[] message=s.split("\\^");
-			MyMessageBean m=new MyMessageBean(message[0],message[1],message[2],message[3],message[4],message[5],message[6],message[7]);
+			MyMessageBean m=new MyMessageBean(message[0],message[1],message[2],message[3],message[4],message[5],message[6],message[7],StateCode.MESSAGE_TYPE_SEND);
 			mlist.add(m);
 		}
 		tv_inbox.setText(messages.length+"");
@@ -146,7 +147,7 @@ public class MessageOutboxListAvtivity extends FinalActivity {
 	 */
 	private void fillMessageList(int state){
 		List<MyMessageBean> messlist=null;
-    	messlist=db.findAll(MyMessageBean.class,"message_sendtime");
+		messlist=db.findAllByWhere(MyMessageBean.class,"message_type='"+StateCode.MESSAGE_TYPE_SEND+"'");
     	Log.v("信息发件箱数量", messlist.size()+"");
     	mesladapter=new MessageListAdapter(getApplicationContext(), messlist);
     	mesladapter.notifyDataSetChanged();
@@ -225,7 +226,7 @@ public class MessageOutboxListAvtivity extends FinalActivity {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_outboxlist, menu);
+		getMenuInflater().inflate(R.menu.menu_message_outboxlist, menu);
 		return true;
 	}
 	@Override

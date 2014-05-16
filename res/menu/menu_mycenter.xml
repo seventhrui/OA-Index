@@ -12,9 +12,8 @@
         android:showAsAction="never"
         android:title="@string/action_startmenu"/>
     <item
-        android:id="@+id/action_select_read"
+        android:id="@+id/action_setting"
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="@string/action_setting"/>
-
 </menu>

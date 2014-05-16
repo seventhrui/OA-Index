@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.StateCode;
 import com.example.oa_index.R;
 import com.example.adapter.MessageListAdapter;
 import com.example.beans.LoginConfig;
@@ -55,8 +56,8 @@ public class MessageDraftListAvtivity extends FinalActivity {
         db = FinalDb.create(this);
         initView();
         //下载消息
-        handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
-        //handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
+        //handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
+        handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
     }
 	private void initView(){
     	ActionBar actionbar=getActionBar();
@@ -92,7 +93,6 @@ public class MessageDraftListAvtivity extends FinalActivity {
 				Log.v("信息草稿箱", "下载数据");
 				String url=LoginConfig.getLoginConfig().getServerip();
 				String userid=LoginConfig.getLoginConfig().getUserid();
-				//String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=2&uid=20121015095350990612c4db3cab4725";//内网ip
 				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=2&uid="+userid;//内网ip
 				Log.v("信息草稿地址", urlPath);
 				// 连接服务器成功之后，解析数据
@@ -115,7 +115,6 @@ public class MessageDraftListAvtivity extends FinalActivity {
 			}
 			//下载进程对话框消失
 			showDownloadDialog(false);
-			//dialog.dismiss();
 		}
 	};
 	/**
@@ -127,7 +126,7 @@ public class MessageDraftListAvtivity extends FinalActivity {
 		String[] messages=str.split("\\|");
 		for(String s:messages){
 			String[] message=s.split("\\^");
-			MyMessageBean m=new MyMessageBean(message[0],message[1],message[2],message[3],message[4],message[5],message[6],message[7]);
+			MyMessageBean m=new MyMessageBean(message[0],message[1],message[2],message[3],message[4],message[5],message[6],message[7],StateCode.MESSAGE_TYPE_DRAFT);
 			mlist.add(m);
 		}
 		tv_inbox.setText(messages.length+"");
@@ -146,7 +145,7 @@ public class MessageDraftListAvtivity extends FinalActivity {
 	 */
 	private void fillMessageList(int state){
 		List<MyMessageBean> messlist=null;
-    	messlist=db.findAll(MyMessageBean.class,"message_sendtime");
+    	messlist=db.findAllByWhere(MyMessageBean.class,"message_type='"+StateCode.MESSAGE_TYPE_DRAFT+"'");
     	Log.v("信息草稿箱数量", messlist.size()+"");
     	mesladapter=new MessageListAdapter(getApplicationContext(), messlist);
     	mesladapter.notifyDataSetChanged();
@@ -225,7 +224,7 @@ public class MessageDraftListAvtivity extends FinalActivity {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_outboxlist, menu);
+		getMenuInflater().inflate(R.menu.menu_message_outboxlist, menu);
 		return true;
 	}
 	@Override
@@ -239,7 +238,6 @@ public class MessageDraftListAvtivity extends FinalActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	//MyCenterActivity.dialog.dismiss();
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK

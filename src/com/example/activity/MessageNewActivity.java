@@ -5,8 +5,12 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.HandlerCode;
+import com.example.StateCode;
 import com.example.oa_index.R;
 import com.example.beans.LoginConfig;
+import com.example.beans.MyMessageBean;
+import com.example.db.OADBHelper;
 import com.example.fileexplorer.CallbackBundle;
 import com.example.fileexplorer.OpenFileDialog;
 import com.example.http.HttpHelper;
@@ -38,29 +42,23 @@ import net.tsz.afinal.annotation.view.ViewInject;
 public class MessageNewActivity extends FinalActivity {
 	private final static int openfileDialogId = 0;
 	private final static int copyfileDialogId = 1;
-	private final static int SEND_MESSAGE_BEGIN=0;//开始发送信息
-	private final static int SEND_MESSAGE_SUCCESS=1;//发送信息成功
-	private final static int SEND_MESSAGE_FAILURE=-1;//发送信息失败
-	private final static int SEND_FILE_BEGIN=2;//上传文件
-	private final static int SEND_FILE_SUCCESS=3;//发送文件成功
-	private final static int SEND_FILE_FAILURE=-3;//发送文件失败
-	private final static int CONNECTION_TIMEOUT=5;//连接超时
-	private String messageid="";
+	private String messageid="";//信息id
 	private String myname="";//用户名
 	private String messagetitle="";//信息主题
 	private String messagecontent="";//信息内容
 	private String receivers="";//收件人名称
 	private String receiverids="";//收件人id
+	private String hasfile="0";//有无附件
 	private String filepath="";//附件路径
+	private String filename="";//附件名
 	private String sendmessagecontent="";//发送消息内容
-    @ViewInject(id=R.id.tv_messagereceiver) TextView tv_messagereceiver;
-    @ViewInject(id=R.id.et_messagereceiver)	EditText et_messagereceiver;
-    @ViewInject(id=R.id.bt_addreceiver,click="onClick_AddReceiver") ImageButton bt_addreceiver;
-    @ViewInject(id=R.id.tv_messagesender) TextView tv_messagesender;
-    @ViewInject(id=R.id.et_messagetitle) EditText et_messagetitle;
-    @ViewInject(id=R.id.et_newcontent) EditText et_newcontent;
-    @ViewInject(id=R.id.tv_filename) TextView tv_filename;
-    @ViewInject(id=R.id.bt_searchfile,click="onClick_SearchFile") Button bt_searchfile;
+    @ViewInject(id=R.id.et_messagereceiver)	EditText et_messagereceiver;//收件人名
+    @ViewInject(id=R.id.bt_addreceiver,click="onClick_AddReceiver") ImageButton bt_addreceiver;//添加收件人
+    @ViewInject(id=R.id.tv_messagesender) TextView tv_messagesender;//发件人
+    @ViewInject(id=R.id.et_messagetitle) EditText et_messagetitle;//信息标题
+    @ViewInject(id=R.id.et_newcontent) EditText et_newcontent;//信息内容
+    @ViewInject(id=R.id.tv_filename) TextView tv_filename;//附件名
+    @ViewInject(id=R.id.bt_searchfile,click="onClick_SearchFile") Button bt_searchfile;//添加附件
     private ProgressDialog dialog=null;//发送进程对话框
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,7 +78,7 @@ public class MessageNewActivity extends FinalActivity {
 		ActionBar actionbar=getActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
 		
-		myname=getIntent().getStringExtra("myname");
+		myname=LoginConfig.getLoginConfig().getMyname();
 		tv_messagesender.setText(myname);
 	}
 	/**
@@ -117,45 +115,55 @@ public class MessageNewActivity extends FinalActivity {
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case SEND_MESSAGE_BEGIN:
+			case HandlerCode.SEND_MESSAGE_BEGIN:
 				showDownloadDialog(true);
 				sendMyMessage();
 				Toast.makeText(getApplicationContext(), "发送信息", Toast.LENGTH_SHORT).show();
 				break;
-			case SEND_MESSAGE_SUCCESS:
+			case HandlerCode.SEND_MESSAGE_SUCCESS:
 				Toast.makeText(getApplicationContext(), "发送信息成功", Toast.LENGTH_SHORT).show();
-				showDownloadDialog(true);
-				sendMyFile();
+				saveMessage(StateCode.MESSAGE_TYPE_SEND);//存已发信息
+				if(!filename.equals("")){
+					showDownloadDialog(true);
+					sendMyFile();//发送附件
+				}
 				break;
-			case SEND_MESSAGE_FAILURE:
+			case HandlerCode.SEND_MESSAGE_FAILURE:
 				Toast.makeText(getApplicationContext(), "发送信息失败", Toast.LENGTH_SHORT).show();
 				break;
-			case SEND_FILE_SUCCESS:
+			case HandlerCode.SEND_FILE_SUCCESS:
 				Toast.makeText(getApplicationContext(), "发送附件成功", Toast.LENGTH_SHORT).show();
 				break;
-			case SEND_FILE_FAILURE:
+			case HandlerCode.SEND_FILE_FAILURE:
 				Toast.makeText(getApplicationContext(), "发送附件失败", Toast.LENGTH_SHORT).show();
 				break;
-			case CONNECTION_TIMEOUT:
+			case HandlerCode.CONNECTION_TIMEOUT:
 				Log.v("收件箱", "连接超时");
 				toastTimeOut();
+				break;
+			case HandlerCode.SAVE_MESSAGE_DRAFT:
+				saveMessage(StateCode.MESSAGE_TYPE_DRAFT);//存草稿
 				break;
 			}
 		}
 	};
+	/**
+	 * 获取信息内容
+	 * @return String
+	 */
 	private String getMessageContent(){
-		String contnet="";
-		String hasfile="0";
+		String contnet="";//发送的信息内容
+		hasfile = "0";//是否有附件
 		receivers=et_messagereceiver.getText().toString().trim();//收件人名称
-		//receiverids 收件人id
-		//myname 发件人名
 		messagetitle=et_messagetitle.getText().toString().trim();//信息标题
 		messagecontent=et_newcontent.getText().toString().trim();//信息内容
-		tv_filename.getText().toString().trim();//附件名
-		if(!tv_filename.equals(""))
+		//过滤关键字“|”
+		messagecontent=messagecontent.replaceAll("\\|", "");
+		filename=tv_filename.getText().toString().trim();//附件名
+		if(!filename.equals(""))//如果有附件则将 hasfile 置一
 			hasfile="1";
-		messageid=StringUtils.GenerateGUID(11);//信息id
-		// 收件人ID|收件人名字|标题|内容|附件|消息ID
+		messageid=StringUtils.GenerateGUID(11);//生成32为的信息id
+		// 收件人ID|收件人名字|标题|内容|有无附件|消息ID
 		contnet=receiverids+"|"+receivers+"|"+messagetitle+"|"+messagecontent+"|"+hasfile+"|"+messageid;
 		return contnet;
 	}
@@ -177,21 +185,21 @@ public class MessageNewActivity extends FinalActivity {
 				String userid=LoginConfig.getLoginConfig().getUserid();
 				String myname=LoginConfig.getLoginConfig().getMyname();
 				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=3&uid="+userid+"&uname="+URLEncoder.encode(myname, "UTF-8");//内网ip
-				Log.v("信息地址", urlPath);
+				Log.v("新建信息发送地址", urlPath);
 				// 连接服务器成功之后，解析数据
 				String data = new HttpHelper(urlPath).doPostString(sendmessagecontent);
-				Log.v("发送返回值",data); 
+				Log.v("新建信息发送返回值",data); 
 				if (data.equals("0")) {
-					handlerSendMessage.sendEmptyMessage(SEND_MESSAGE_FAILURE);
+					handlerSendMessage.sendEmptyMessage(HandlerCode.SEND_MESSAGE_FAILURE);
 				} 
 				else if (data.equals("1")){
-					handlerSendMessage.sendEmptyMessage(SEND_MESSAGE_SUCCESS);
+					handlerSendMessage.sendEmptyMessage(HandlerCode.SEND_MESSAGE_SUCCESS);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				handlerSendMessage.sendEmptyMessage(CONNECTION_TIMEOUT);
+				handlerSendMessage.sendEmptyMessage(HandlerCode.CONNECTION_TIMEOUT);
 			}
-			//下载进程对话框消失
+			//发送进程对话框消失
 			showDownloadDialog(false);
 		}
 	};
@@ -208,25 +216,35 @@ public class MessageNewActivity extends FinalActivity {
 		public void run() {
 			try{
 				File file=new File(filepath);
-				String filename=StringUtils.TimeString()+"$"+StringUtils.Path2FileName(filepath);
+				String fname=StringUtils.TimeString()+"$"+StringUtils.Path2FileName(filepath);
 				String url=LoginConfig.getLoginConfig().getServerip();
-				String urlPath="http://"+url+"/oa/ashx/Ioa.ashx?ot=4&mid="+messageid+"&fn="+filename;
-				Log.v("发送文件", urlPath);
+				String urlPath="http://"+url+"/oa/ashx/Ioa.ashx?ot=4&mid="+messageid+"&fn="+fname;
+				Log.v("新建信息发送文件", urlPath);
 				String data = new HttpHelper(urlPath).uploadFile(file);
-				Log.v("发送返回值",data); 
+				Log.v("新建信息发送返回值",data); 
 				if (data.equals("0")) {
-					handlerSendMessage.sendEmptyMessage(SEND_FILE_FAILURE);
+					handlerSendMessage.sendEmptyMessage(HandlerCode.SEND_FILE_FAILURE);
 				} 
 				else if (data.equals("1")){
-					handlerSendMessage.sendEmptyMessage(SEND_FILE_SUCCESS);
+					handlerSendMessage.sendEmptyMessage(HandlerCode.SEND_FILE_SUCCESS);
 				}
 			}catch(Exception e){
-				handlerSendMessage.sendEmptyMessage(CONNECTION_TIMEOUT);
+				handlerSendMessage.sendEmptyMessage(HandlerCode.CONNECTION_TIMEOUT);
 			}
 			showDownloadDialog(false);
 		}
 		
 	};
+	/**
+	 * 保存草稿
+	 * @param mmb
+	 */
+	private void saveMessage(String type){
+		getMessageContent();
+		MyMessageBean mmb=new MyMessageBean(messageid, "", "", messagetitle, messagecontent, hasfile, filename, "0", type);
+		Log.v("存草稿：", "mmsid="+messageid+"receivers="+""); 
+		OADBHelper.saveMessage(mmb, getApplicationContext());
+	}
 	/**
 	 * 下载进程对话框
 	 */
@@ -286,13 +304,16 @@ public class MessageNewActivity extends FinalActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_forwardmessage, menu);
+		getMenuInflater().inflate(R.menu.menu_message_new, menu);
 		return true;
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("发送")) {
-			handlerSendMessage.sendEmptyMessage(SEND_MESSAGE_BEGIN);
+			handlerSendMessage.sendEmptyMessage(HandlerCode.SEND_MESSAGE_BEGIN);
+		}
+		else if(item.getItemId()==R.id.action_save){
+			handlerSendMessage.sendEmptyMessage(HandlerCode.SAVE_MESSAGE_DRAFT);
 		}
 		else if (item.getItemId()==android.R.id.home){
 			this.finish();

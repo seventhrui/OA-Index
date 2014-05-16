@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.HandlerCode;
+import com.example.StateCode;
 import com.example.oa_index.R;
 import com.example.adapter.MessageListAdapter;
 import com.example.beans.LoginConfig;
@@ -36,15 +38,9 @@ import net.tsz.afinal.annotation.view.ViewInject;
 public class MessageInboxListAvtivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
     @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_messages;
-    private final static int DOWNLOAD_MESSAGE_BEGIN=0;//下载信息
-	private final static int DOWNLOAD_MESSAGE_SUCCESS=1;//下载信息成功
-	private final static int DOWNLOAD_MESSAGE_FAILURE=-1;//下载信息失败
-	private final static int DATABASE_MESSAGE_SAVE=2;//保存信息数据
-	private final static int CONNECTION_TIMEOUT=3;//连接超时
-	private final static int STATE_MESSAGE_ALL=0;//全部
-	private final static int STATE_MESSAGE_UNREAD=1;//已读
-	private final static int STATE_MESSAGE_READ=2;//未读
+    
 	private String inboxresult="0";
+	private String myname="";//用户名字
 	private List<MyMessageBean> messagelist=null;//信息list
 	private MessageListAdapter mesladapter=null;//信息list适配器
 	private FinalDb db = null;
@@ -57,13 +53,14 @@ public class MessageInboxListAvtivity extends FinalActivity {
         db = FinalDb.create(this);
         initView();
         //下载消息
-        handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
+        handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
         //handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
     }
 	private void initView(){
     	ActionBar actionbar=getActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         getOverflowMenu();
+        myname=LoginConfig.getLoginConfig().getMyname();
     }
 
 	/**
@@ -76,6 +73,7 @@ public class MessageInboxListAvtivity extends FinalActivity {
 		Intent in = new Intent(getApplicationContext(), MessageShowActivity.class);
 		Bundle bundle = new Bundle();  
 		bundle.putCharSequence("messageid", messageid );
+		bundle.putCharSequence("myname", myname );
 		in.putExtras(bundle);
 		startActivity(in);
 	}
@@ -100,19 +98,19 @@ public class MessageInboxListAvtivity extends FinalActivity {
 				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
 					tv_inbox.setText("-1");
-					handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_FAILURE);
+					handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_FAILURE);
 				} 
 				else if (data.equals("0")) {
 					tv_inbox.setText("0");
 				} 
 				else {
 					inboxresult=data;
-					handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_SUCCESS);
+					handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_SUCCESS);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				handlerdealmessage.sendEmptyMessage(CONNECTION_TIMEOUT);
-				handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
+				handlerdealmessage.sendEmptyMessage(HandlerCode.CONNECTION_TIMEOUT);
+				handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
 			}
 			//下载进程对话框消失
 			showDownloadDialog(false);
@@ -127,7 +125,7 @@ public class MessageInboxListAvtivity extends FinalActivity {
 		String[] messages=str.split("\\|");
 		for(String s:messages){
 			String[] message=s.split("\\^");
-			MyMessageBean m=new MyMessageBean(message[0],message[1],message[2],message[3],message[4],message[5],message[6],message[7]);
+			MyMessageBean m=new MyMessageBean(message[0],message[1],message[2],message[3],message[4],message[5],message[6],message[7],StateCode.MESSAGE_TYPE_RECEIVE);
 			mlist.add(m);
 		}
 		tv_inbox.setText(messages.length+"");
@@ -139,21 +137,21 @@ public class MessageInboxListAvtivity extends FinalActivity {
 	private void saveData(){
 		messagelist=splitMessageString(inboxresult);
 		OADBHelper.saveMessages(messagelist,getApplicationContext());
-		handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
+		handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
 	}
 	/**
 	 * 填充信息
 	 */
 	private void fillMessageList(int state){
 		List<MyMessageBean> messlist=null;
-    	if(state==STATE_MESSAGE_ALL){
-    		messlist=db.findAll(MyMessageBean.class,"message_sendtime");
+    	if(state==StateCode.STATE_MESSAGE_ALL){
+    		messlist=db.findAllByWhere(MyMessageBean.class,"message_type='"+StateCode.MESSAGE_TYPE_RECEIVE+"'");
     	}
-    	else if(state==STATE_MESSAGE_UNREAD){
-    		messlist=db.findAllByWhere(MyMessageBean.class,"message_state='"+0+"'");
+    	else if(state==StateCode.STATE_MESSAGE_UNREAD){
+    		messlist=db.findAllByWhere(MyMessageBean.class,"message_state='"+0+"' AND "+"message_type='"+StateCode.MESSAGE_TYPE_RECEIVE+"'");
     	}
-    	else if(state==STATE_MESSAGE_READ){
-    		messlist=db.findAllByWhere(MyMessageBean.class,"message_state='"+1+"'");
+    	else if(state==StateCode.STATE_MESSAGE_READ){
+    		messlist=db.findAllByWhere(MyMessageBean.class,"message_state='"+1+"' AND "+"message_type='"+StateCode.MESSAGE_TYPE_RECEIVE+"'");
     	}
     	Log.v("收件箱数量", messlist.size()+"");
     	mesladapter=new MessageListAdapter(getApplicationContext(), messlist);
@@ -181,23 +179,23 @@ public class MessageInboxListAvtivity extends FinalActivity {
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case DOWNLOAD_MESSAGE_BEGIN:
+			case HandlerCode.DOWNLOAD_MESSAGE_BEGIN:
 				Log.v("收件箱", "下载开始");
 				showDownloadDialog(true);
 				downloadMessage();
 				break;
-			case DOWNLOAD_MESSAGE_SUCCESS:
+			case HandlerCode.DOWNLOAD_MESSAGE_SUCCESS:
 				Log.v("收件箱", "下载成功");
 				saveData();
 				break;
-			case DOWNLOAD_MESSAGE_FAILURE:
+			case HandlerCode.DOWNLOAD_MESSAGE_FAILURE:
 				Log.v("收件箱", "下载失败");
 				downloadMessage();
 				break;
-			case DATABASE_MESSAGE_SAVE:
+			case HandlerCode.DATABASE_MESSAGE_SAVE:
 				Log.v("收件箱", "保存数据");
 				break;
-			case CONNECTION_TIMEOUT:
+			case HandlerCode.CONNECTION_TIMEOUT:
 				Log.v("收件箱", "连接超时");
 				toastTimeOut();
 				break;
@@ -210,14 +208,14 @@ public class MessageInboxListAvtivity extends FinalActivity {
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case STATE_MESSAGE_UNREAD:
-				fillMessageList(STATE_MESSAGE_UNREAD);
+			case StateCode.STATE_MESSAGE_UNREAD:
+				fillMessageList(StateCode.STATE_MESSAGE_UNREAD);
 				break;
-			case STATE_MESSAGE_READ:
-				fillMessageList(STATE_MESSAGE_READ);
+			case StateCode.STATE_MESSAGE_READ:
+				fillMessageList(StateCode.STATE_MESSAGE_READ);
 				break;
-			case STATE_MESSAGE_ALL:
-				fillMessageList(STATE_MESSAGE_ALL);
+			case StateCode.STATE_MESSAGE_ALL:
+				fillMessageList(StateCode.STATE_MESSAGE_ALL);
 				break;
 			}
 		}
@@ -239,25 +237,25 @@ public class MessageInboxListAvtivity extends FinalActivity {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_inboxlist, menu);
+		getMenuInflater().inflate(R.menu.menu_message_inboxlist, menu);
 		return true;
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("刷新")) {
-			handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
+			handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
 		}
 		//未读
 		else if (item.getTitle().toString().trim().equals("未读")) {
-			handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_UNREAD);
+			handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_UNREAD);
 		}
 		//已读
 		else if (item.getTitle().toString().trim().equals("已读")) {
-			handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_READ);
+			handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_READ);
 		}
 		//全部
 		else if (item.getTitle().toString().trim().equals("全部")) {
-			handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
+			handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
 		}
 		//返回
 		else if (item.getItemId()==android.R.id.home){

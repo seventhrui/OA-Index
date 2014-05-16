@@ -6,7 +6,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
         android:orientation="vertical" >
 
         <RelativeLayout
@@ -21,9 +22,10 @@
 
             <EditText
                 android:id="@+id/et_messagereceiver"
-                android:layout_width="300dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/tv_messagereceiver" />
+                android:layout_toRightOf="@id/tv_messagereceiver" 
+                android:hint="收件人"/>
 
             <ImageButton
                 android:id="@+id/bt_addreceiver"
@@ -79,6 +81,22 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp" />
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+            <TextView
+                android:id="@+id/tv_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="附件：" />
+
+            <TextView
+                android:id="@+id/tv_filename"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/tv_file"
+                android:text="" />
+        </RelativeLayout>
     </LinearLayout>
 
 </ScrollView>

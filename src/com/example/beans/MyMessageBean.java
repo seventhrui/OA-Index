@@ -7,15 +7,15 @@ import net.tsz.afinal.annotation.sqlite.Id;
 import net.tsz.afinal.annotation.sqlite.Table;
 
 /**
- * 0.信息id </br>
- * 1.发信人 </br>
- * 2.发信时间  </br>
- * 3.标题  </br>
- * 4.内容  </br>
- * 5.是否有附件  </br>
- * 6.附件名  </br>
- * 7.是否查看
- *
+ * 0.信息id <br/>
+ * 1.发信人 <br/>
+ * 2.发信时间  <br/>
+ * 3.标题  <br/>
+ * 4.内容  <br/>
+ * 5.是否有附件  0无 1有<br/>
+ * 6.附件名  <br/>
+ * 7.是否查看 0未看 1已看<br/>
+ * 8.信息类型 1收件 2发件 3草稿
  */
 @Table(name = "oa_messages")//设置表名
 public class MyMessageBean {
@@ -28,10 +28,11 @@ public class MyMessageBean {
 	public String message_hasfile;
 	public String message_filename;
 	public String message_state;
+	public String message_type;
 	public MyMessageBean(){
 		
 	}
-	public MyMessageBean(String id,String addresser,String sendtime,String title,String content,String hasfile,String filename,String state){
+	public MyMessageBean(String id,String addresser,String sendtime,String title,String content,String hasfile,String filename,String state,String type){
 		this.message_id=id;
 		this.message_sender=addresser;
 		this.message_sendtime=sendtime;
@@ -40,6 +41,7 @@ public class MyMessageBean {
 		this.message_hasfile=hasfile;
 		this.message_filename=filename;
 		this.message_state=state;
+		this.message_type=type;
 	}
 	public String getMessage_id() {
 		return message_id;
@@ -88,6 +90,12 @@ public class MyMessageBean {
 	}
 	public void setMessage_state(String message_state) {
 		this.message_state = message_state;
+	}
+	public String getMessage_type() {
+		return message_type;
+	}
+	public void setMessage_type(String message_type) {
+		this.message_type = message_type;
 	}
 	
 }

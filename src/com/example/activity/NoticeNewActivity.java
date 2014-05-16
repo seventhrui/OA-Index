@@ -152,7 +152,7 @@ public class NoticeNewActivity extends FinalActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_forwardmessage, menu);
+		getMenuInflater().inflate(R.menu.menu_message_forward, menu);
 		return true;
 	}
 	@Override

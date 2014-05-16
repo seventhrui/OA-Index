@@ -6,7 +6,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
         android:orientation="vertical" >
 
         <LinearLayout
@@ -75,6 +76,43 @@
             android:hint="填写信息内容"
             android:inputType="textMultiLine"
             android:minLines="5" />
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1px"
+            android:background="#000000" >
+        </View>
+
+        <WebView
+            android:id="@+id/wv_originalcontent"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp" />
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+            <TextView
+                android:id="@+id/tv_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="附件：" />
+
+            <TextView
+                android:id="@+id/tv_filename"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/tv_file"
+                android:text="" />
+
+            <Button
+                android:id="@+id/bt_searchfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="5dp"
+                android:background="@null"
+                android:text="浏览"
+                android:textColor="#0000ff" />
+        </RelativeLayout>
     </LinearLayout>
 
 </ScrollView>

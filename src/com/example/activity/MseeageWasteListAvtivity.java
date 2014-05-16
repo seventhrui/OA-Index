@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.StateCode;
 import com.example.oa_index.R;
 import com.example.adapter.MessageListAdapter;
 import com.example.beans.LoginConfig;
@@ -127,7 +128,7 @@ public class MseeageWasteListAvtivity extends FinalActivity {
 		String[] messages=str.split("\\|");
 		for(String s:messages){
 			String[] message=s.split("\\^");
-			MyMessageBean m=new MyMessageBean(message[0],message[1],message[2],message[3],message[4],message[5],message[6],message[7]);
+			MyMessageBean m=new MyMessageBean(message[0],message[1],message[2],message[3],message[4],message[5],message[6],message[7],StateCode.MESSAGE_TYPE_WASTE);
 			mlist.add(m);
 		}
 		tv_inbox.setText(messages.length+"");
@@ -225,7 +226,7 @@ public class MseeageWasteListAvtivity extends FinalActivity {
 	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_outboxlist, menu);
+		getMenuInflater().inflate(R.menu.menu_message_outboxlist, menu);
 		return true;
 	}
 	@Override
