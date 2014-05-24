@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.example.oa_index.R;
 import com.example.beans.MyMessageBean;
+import com.example.db.OADBHelper;
 
 import android.app.ActionBar;
 import android.app.DownloadManager;
@@ -43,6 +44,7 @@ public class MessageShowActivity extends FinalActivity {
     private String fileurl="";
     private String filename="";
 	private String filepath="";
+	private String messageid="";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +62,7 @@ public class MessageShowActivity extends FinalActivity {
      * 在控件中添加信息详情
      */
     private void showMessage(){
-    	String messageid=getIntent().getStringExtra("messageid");
+    	messageid=getIntent().getStringExtra("messageid");
     	FinalDb db = FinalDb.create(this);
     	List<MyMessageBean> messlist=db.findAllByWhere(MyMessageBean.class, "message_id='"+messageid+"'");
     	for(int i=0;i<messlist.size();i++){
@@ -79,34 +81,14 @@ public class MessageShowActivity extends FinalActivity {
 			wv_messagecontent.loadDataWithBaseURL(null, messagecontent, "text/html", "utf-8", null);
     	}
     	//如果该信息为未读（即信息状态为0），查看完信息后将信息修改为已读
-    	MyMessageBean mm=messlist.get(0);
-    	if(mm.getMessage_state().equals("0")){
-	    	mm.setMessage_state("1");
-	    	Log.v("收件箱更新状态","aaa");
-	    	db.update(mm);
+    	if(messlist.size()!=0){
+	    	MyMessageBean mm=messlist.get(0);
+	    	if(mm.getMessage_state().equals("0")){
+		    	mm.setMessage_state("1");
+		    	Log.v("收件箱更新状态","aaa");
+		    	db.update(mm);
+	    	}
     	}
-    	/*//从InboxListAvtivity.messagelist中获取信息列表
-    	String messageid=getIntent().getStringExtra("messageid");
-    	List<MyMessage> messlist =InboxListAvtivity.messagelist;
-    	for(MyMessage m:messlist){
-    		if(messageid.trim().equals(m.getMessage_id())){
-    			Log.v("选中的id", messageid);
-    			tv_messagetitle.setText(m.getMessage_title());
-    			tv_messagesender.setText(m.getMessage_sender());
-    			tv_messagetime.setText(m.getMessage_sendtime());
-    			if(m.getMessage_hasfile().equals("0"))
-    				bt_messagefile.setVisibility(View.INVISIBLE);
-    			else{
-    				filename=m.getMessage_filename();
-    				bt_messagefile.setText(filename);
-    			}
-    			String data=m.getMessage_content();
-    			if(data.isEmpty())
-    				data=" ";
-    			wv_messagecontent.loadDataWithBaseURL(null, data, "text/html", "utf-8", null);
-    		}
-    	}
-    	*/
     }
     /**
      * 下载附件
@@ -146,6 +128,15 @@ public class MessageShowActivity extends FinalActivity {
 			
 			lastDownload = mgr.enqueue(dwreq);
 		}
+	}
+    /**
+	 * 删除草稿
+	 * @param mid
+	 */
+	private void deleteMessage(){
+		OADBHelper.deleteMessage(messageid, getApplicationContext());
+		Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
+		this.finish();
 	}
     /**
 	 * 三点菜单
@@ -199,7 +190,8 @@ public class MessageShowActivity extends FinalActivity {
 		}
 		//删除信息
 		else if (item.getTitle().toString().trim().equals("删除")) {
-			Toast.makeText(getApplicationContext(), item.getTitle()+"", Toast.LENGTH_SHORT).show();
+			deleteMessage();
+			this.finish();
 		}
 		//返回
 		else if (item.getItemId()==android.R.id.home){

@@ -32,9 +32,9 @@ public class MyMessageBean {
 	public MyMessageBean(){
 		
 	}
-	public MyMessageBean(String id,String addresser,String sendtime,String title,String content,String hasfile,String filename,String state,String type){
+	public MyMessageBean(String id,String sender,String sendtime,String title,String content,String hasfile,String filename,String state,String type){
 		this.message_id=id;
-		this.message_sender=addresser;
+		this.message_sender=sender;
 		this.message_sendtime=sendtime;
 		this.message_title=title;
 		this.message_content=content;

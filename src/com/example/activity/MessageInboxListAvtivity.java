@@ -56,6 +56,15 @@ public class MessageInboxListAvtivity extends FinalActivity {
         handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
         //handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
     }
+	
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
+	}
+
+
 	private void initView(){
     	ActionBar actionbar=getActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);

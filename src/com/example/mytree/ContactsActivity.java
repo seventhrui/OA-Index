@@ -5,7 +5,10 @@ import java.util.List;
 
 import net.tsz.afinal.FinalDb;
 
+import com.example.HandlerCode;
+import com.example.StateCode;
 import com.example.beans.LoginConfig;
+import com.example.beans.MyMessageBean;
 import com.example.beans.OrganizationBean;
 import com.example.beans.UserBean;
 import com.example.http.HttpHelper;
@@ -23,6 +26,7 @@ import android.view.MenuItem;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
+
 /**
  * 联系人树
  */
@@ -52,7 +56,8 @@ public class ContactsActivity extends Activity {
 		 * rl.addView(listView); setContentView(rl);
 		 */
 		initView();
-		handler.sendEmptyMessage(DOWNLOAD_ORGANANDUSER_BEGIN);// 开始下载组织人员
+		// handler.sendEmptyMessage(DOWNLOAD_ORGANANDUSER_BEGIN);// 开始下载组织人员
+		handler.sendEmptyMessage(HandlerCode.SHOWDATA);
 		db = FinalDb.create(this);
 	}
 
@@ -60,8 +65,10 @@ public class ContactsActivity extends Activity {
 		ActionBar actionbar = getActionBar();
 		actionbar.setDisplayHomeAsUpEnabled(true);
 	}
+
 	/**
 	 * 初始化树
+	 * 
 	 * @return
 	 */
 	public List<NodeResource> initNodeTree() {
@@ -74,7 +81,30 @@ public class ContactsActivity extends Activity {
 		}
 		for (UserBean ub : ublist) {
 			NodeResource n2 = new NodeResource(ub.getUserorga(),
-					ub.getUserid(), ub.getUsername(), ub.getUserid(),
+					ub.getUsersid(), ub.getUsername(), ub.getUsersid(),
+					R.drawable.icon_department);
+			list.add(n2);
+		}
+		return list;
+	}
+
+	public List<NodeResource> searchNodeTree() {
+		List<NodeResource> list = new ArrayList<NodeResource>();
+		List<OrganizationBean> obl = new ArrayList<OrganizationBean>();// 组织机构类
+		List<UserBean> ubl = new ArrayList<UserBean>();// 人员类
+		obl = db.findAll(OrganizationBean.class);
+		ubl = db.findAll(UserBean.class);
+		
+		for (OrganizationBean ob : obl) {
+			NodeResource nr = new NodeResource(ob.getOrganizationparent(),
+					ob.getOrganizationid(), ob.getOrganizationname(),
+					ob.getOrganizationid(), R.drawable.icon_department);
+			list.add(nr);
+		}
+		
+		for (UserBean ub : ubl) {
+			NodeResource n2 = new NodeResource(ub.getUserorga(),
+					ub.getUsersid(), ub.getUsername(), ub.getUsersid(),
 					R.drawable.icon_department);
 			list.add(n2);
 		}
@@ -84,10 +114,10 @@ public class ContactsActivity extends Activity {
 	/**
 	 * 联系人列表填充listView
 	 */
-	private void showlist() {
-		if(listView != null)
+	private void showlist(List<NodeResource> nrl) {
+		if (listView != null)
 			listView.removeAllViews();
-		listView = new TreeListView(this, initNodeTree());
+		listView = new TreeListView(this, nrl);
 		rl.addView(listView);
 		setContentView(rl);
 	}
@@ -156,8 +186,8 @@ public class ContactsActivity extends Activity {
 		public void run() {
 			try {
 				Log.v("调试", "下载数据");
-				String url=LoginConfig.getLoginConfig().getServerip();
-				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=1";// 内网ip
+				String url = LoginConfig.getLoginConfig().getServerip();
+				String urlPath = "http://" + url + "/oa/ashx/Ioa.ashx?ot=1";// 内网ip
 				// 连接服务器成功之后，解析数据
 				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
@@ -168,7 +198,7 @@ public class ContactsActivity extends Activity {
 					handler.sendEmptyMessage(DOWNLOAD_ORGANANDUSER_SUCCESS);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				handler.sendEmptyMessage(HandlerCode.CONNECTION_TIMEOUT);
 			}
 		}
 	};
@@ -196,13 +226,26 @@ public class ContactsActivity extends Activity {
 				break;
 			case DATABASE_SAVE:
 				Log.v("hangler", "保存数据");
-				showlist();
+				showlist(initNodeTree());
 				saveData();
+				break;
+			case HandlerCode.SHOWDATA:
+				showlist(searchNodeTree());
+				break;
+			case HandlerCode.CONNECTION_TIMEOUT:
+				toastTimeOut();
 				break;
 			}
 		}
 	};
-
+	
+	/**
+	 * 提示下载超时
+	 */
+	private void toastTimeOut(){
+		Toast.makeText(getApplicationContext(), R.string.timeout, Toast.LENGTH_LONG).show();
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.menu_addreceiver, menu);
@@ -212,33 +255,32 @@ public class ContactsActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("刷新")) {
-			Toast.makeText(getApplicationContext(), item.getTitle() + "",
-					Toast.LENGTH_SHORT).show();
 			handler.sendEmptyMessage(DOWNLOAD_ORGANANDUSER_BEGIN);
-		}
-		else if (item.getTitle().toString().trim().equals("联系人")) {
-			List<Node> nodelist=null;
-			String receivernames="";
-			String receiverids="";
-			try{
-				nodelist=listView.ta.getSelectedNode();
-				if(nodelist!= null){
-					nodelist=listView.ta.getSelectedNode();
-					for(Node n:nodelist){
-						receivernames+=n.getTitle()+",";
-						receiverids+=n.getValue()+",";
+		} else if (item.getTitle().toString().trim().equals("联系人")) {
+			List<Node> nodelist = null;
+			String receivernames = "";
+			String receiverids = "";
+			try {
+				nodelist = listView.ta.getSelectedNode();
+				if (nodelist != null) {
+					nodelist = listView.ta.getSelectedNode();
+					for (Node n : nodelist) {
+						receivernames += n.getTitle() + ",";
+						receiverids += n.getValue() + ",";
 					}
 				}
-			}catch(Exception e){
-				
+			} catch (Exception e) {
+
 			}
-			if(!receivernames.equals("")){
-				receivernames=receivernames.substring(0,receivernames.length()-1);
-				receiverids=receiverids.substring(0,receiverids.length()-1);
+			if (!receivernames.equals("")) {
+				receivernames = receivernames.substring(0,
+						receivernames.length() - 1);
+				receiverids = receiverids
+						.substring(0, receiverids.length() - 1);
 				Intent intent = new Intent();
 				intent.putExtra("resultnames", receivernames);
 				intent.putExtra("receiverids", receiverids);
-	            setResult(1001, intent);
+				setResult(1001, intent);
 			}
 			this.finish();
 		}

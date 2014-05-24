@@ -62,6 +62,9 @@
             android:name="com.example.activity.MessageDraftListAvtivity"
             android:label="@string/activity_draft"/>
         <activity 
+            android:name="com.example.activity.MessageDraftShowActivity"
+            android:label="@string/activity_draftmessageshow"/>
+        <activity 
             android:name="com.example.activity.MseeageWasteListAvtivity"
             android:label="@string/activity_waste"/>
         <activity 
@@ -80,6 +83,9 @@
             android:name="com.example.activity.RequestLeaveActivity"
             android:label="@string/activity_requestleave"/>
         <activity 
+            android:name="com.example.activity.PlanNewActivity"
+            android:label="@string/activity_plannew"/>
+		<activity 
             android:name="com.example.activity.KnowledgeListActivity"
             android:label="@string/knowledge"/>
         <activity 

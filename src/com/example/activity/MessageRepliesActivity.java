@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.example.HandlerCode;
 import com.example.beans.LoginConfig;
 import com.example.fileexplorer.CallbackBundle;
 import com.example.fileexplorer.OpenFileDialog;
@@ -36,12 +37,7 @@ import net.tsz.afinal.annotation.view.ViewInject;
 public class MessageRepliesActivity extends FinalActivity {
 	private final static int openfileDialogId = 0;
 	private final static int copyfileDialogId = 1;
-	private final static int SEND_MESSAGE_BEGIN=0;//开始发送信息
-	private final static int SEND_MESSAGE_SUCCESS=1;//发送信息成功
-	private final static int SEND_MESSAGE_FAILURE=-1;//发送信息失败
-	private final static int SEND_FILE_SUCCESS=3;//发送文件成功
-	private final static int SEND_FILE_FAILURE=-3;//发送文件失败
-	private final static int CONNECTION_TIMEOUT=5;//连接超时
+	
 	private String originalsender = "";// 收件人（原发件人）
 	private String myname = "";// 用户名
 	private String messagetitle = "";// 原信息主题
@@ -111,28 +107,28 @@ public class MessageRepliesActivity extends FinalActivity {
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case SEND_MESSAGE_BEGIN:
+			case HandlerCode.SEND_MESSAGE_BEGIN:
 				Toast.makeText(getApplicationContext(), "发送信息", Toast.LENGTH_SHORT).show();
 				showDownloadDialog(true);
 				sendMyMessage();
 				break;
-			case SEND_MESSAGE_SUCCESS:
+			case HandlerCode.SEND_MESSAGE_SUCCESS:
 				Toast.makeText(getApplicationContext(), "发送信息成功", Toast.LENGTH_SHORT).show();
 				if(!filename.equals("")){
 					showDownloadDialog(true);
 					sendMyFile();//发送附件
 				}
 				break;
-			case SEND_MESSAGE_FAILURE:
+			case HandlerCode.SEND_MESSAGE_FAILURE:
 				Toast.makeText(getApplicationContext(), "发送信息失败", Toast.LENGTH_SHORT).show();
 				break;
-			case SEND_FILE_SUCCESS:
+			case HandlerCode.SEND_FILE_SUCCESS:
 				Toast.makeText(getApplicationContext(), "发送附件成功", Toast.LENGTH_SHORT).show();
 				break;
-			case SEND_FILE_FAILURE:
+			case HandlerCode.SEND_FILE_FAILURE:
 				Toast.makeText(getApplicationContext(), "发送附件失败", Toast.LENGTH_SHORT).show();
 				break;
-			case CONNECTION_TIMEOUT:
+			case HandlerCode.CONNECTION_TIMEOUT:
 				Log.v("收件箱", "连接超时");
 				toastTimeOut();
 				break;
@@ -219,14 +215,14 @@ public class MessageRepliesActivity extends FinalActivity {
 				String data = new HttpHelper(urlPath).doPostString(sendmessagecontent);
 				Log.v("回复信息返回值",data); 
 				if (data.equals("0")) {
-					handlersendmessage.sendEmptyMessage(SEND_MESSAGE_FAILURE);
+					handlersendmessage.sendEmptyMessage(HandlerCode.SEND_MESSAGE_FAILURE);
 				} 
 				else if (data.equals("1")){
-					handlersendmessage.sendEmptyMessage(SEND_MESSAGE_SUCCESS);
+					handlersendmessage.sendEmptyMessage(HandlerCode.SEND_MESSAGE_SUCCESS);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				handlersendmessage.sendEmptyMessage(CONNECTION_TIMEOUT);
+				handlersendmessage.sendEmptyMessage(HandlerCode.CONNECTION_TIMEOUT);
 			}
 			//下载进程对话框消失
 			showDownloadDialog(false);
@@ -252,13 +248,13 @@ public class MessageRepliesActivity extends FinalActivity {
 				String data = new HttpHelper(urlPath).uploadFile(file);
 				Log.v("回复信息发送返回值",data); 
 				if (data.equals("0")) {
-					handlersendmessage.sendEmptyMessage(SEND_FILE_FAILURE);
+					handlersendmessage.sendEmptyMessage(HandlerCode.SEND_FILE_FAILURE);
 				} 
 				else if (data.equals("1")){
-					handlersendmessage.sendEmptyMessage(SEND_FILE_SUCCESS);
+					handlersendmessage.sendEmptyMessage(HandlerCode.SEND_FILE_SUCCESS);
 				}
 			}catch(Exception e){
-				handlersendmessage.sendEmptyMessage(CONNECTION_TIMEOUT);
+				handlersendmessage.sendEmptyMessage(HandlerCode.CONNECTION_TIMEOUT);
 			}
 			showDownloadDialog(false);
 		}
@@ -274,7 +270,7 @@ public class MessageRepliesActivity extends FinalActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("发送")) {
-			handlersendmessage.sendEmptyMessage(SEND_MESSAGE_BEGIN);
+			handlersendmessage.sendEmptyMessage(HandlerCode.SEND_MESSAGE_BEGIN);
 			getMessageContent();
 		} else if (item.getItemId() == android.R.id.home) {
 			this.finish();

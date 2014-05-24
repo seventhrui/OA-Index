@@ -13,8 +13,8 @@ import net.tsz.afinal.annotation.sqlite.Table;
  */
 @Table(name = "oa_users")
 public class UserBean {
-	@Id(column="userid")//自定义主键名称
-	private String userid;//联系人编号
+	@Id(column="usersid")//自定义主键名称
+	private String usersid;//联系人编号
 	private String username;//联系人名称
 	private String userorga;//联系人所属机构编号
 	public UserBean(){
@@ -22,16 +22,16 @@ public class UserBean {
 	}
 	public UserBean(String name,String id,String orga){
 		this.username=name;
-		this.userid=id;
+		this.usersid=id;
 		this.userorga=orga;
 	}
 	
 	
-	public String getUserid() {
-		return userid;
+	public String getUsersid() {
+		return usersid;
 	}
-	public void setUserid(String userid) {
-		this.userid = userid;
+	public void setUsersid(String userid) {
+		this.usersid = userid;
 	}
 	public String getUsername() {
 		return username;
@@ -48,7 +48,7 @@ public class UserBean {
 	@Override
 	public String toString() {
 		
-		return "用户名："+this.username+"用户编号："+this.userid;
+		return "用户名："+this.username+"用户编号："+this.usersid;
 	}
 	
 }

@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.ActivityCode;
+import com.example.HandlerCode;
 import com.example.StateCode;
 import com.example.adapter.MyCenterListAdapter;
 import com.example.beans.LoginConfig;
@@ -13,7 +15,6 @@ import com.example.db.OADBHelper;
 import com.example.http.HttpHelper;
 import com.example.mybase.MyBaseActivity;
 import com.example.oa_index.R;
-import com.example.utils.HttpUtil;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
@@ -41,16 +42,7 @@ import net.tsz.afinal.annotation.view.ViewInject;
  * 最新知识
  */
 public class MyCenterActivity extends MyBaseActivity {
-	private static final int COMMECTION=1;//消息沟通
-	private static final int NOTIFICATION=2;//通知通告
-	private static final int WORKTASK=3;//工作任务
-	private static final int WORKREMINDER=4;//工作提醒
-	private static final int KNOWLEDGE=5;//最新知识
-	private final static int DOWNLOAD_MESSAGE_BEGIN=0;//下载信息
-	private final static int DOWNLOAD_MESSAGE_SUCCESS=1;//下载信息成功
-	private final static int DOWNLOAD_MESSAGE_FAILURE=-1;//下载信息失败
-	private final static int CONNECTION_TIMEOUT=3;//连接超时
-	private final static int DATABASE_MESSAGE_SAVED=2;//保存信息数据
+	
 	@ViewInject(id=R.id.lv_mycenter,itemClick="onClick_gotopart") ListView lv_mycenter;//个人中心列表
 	private MyCenterListAdapter mcladapter=null;//个人中心列表适配器
 	List<MyCenterBeans> mcblist=null;//个人中心Beans
@@ -61,7 +53,7 @@ public class MyCenterActivity extends MyBaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mycenter);
-        handlerDownload.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
+        handlerDownload.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
         initView();
     }
 	public void initView(){
@@ -84,15 +76,15 @@ public class MyCenterActivity extends MyBaseActivity {
 		TextView tv_id=(TextView) arg1.findViewById(R.id.tv_mycenter_funtype);
 		String type=tv_id.getText().toString().trim();
 		if (type.equals("消息沟通")) {
-			handler.sendEmptyMessage(COMMECTION);
+			handler.sendEmptyMessage(ActivityCode.COMMECTION);
 		} else if (type.equals("通知通告")) {
-			handler.sendEmptyMessage(NOTIFICATION);
+			handler.sendEmptyMessage(ActivityCode.NOTIFICATION);
 		} else if (type.equals("工作任务")) {
-			handler.sendEmptyMessage(WORKTASK);
+			handler.sendEmptyMessage(ActivityCode.WORKTASK);
 		} else if (type.equals("工作提醒")) {
-			handler.sendEmptyMessage(WORKREMINDER);
+			handler.sendEmptyMessage(ActivityCode.WORKREMINDER);
 		} else if (type.equals("最新知识")) {
-			handler.sendEmptyMessage(KNOWLEDGE);
+			handler.sendEmptyMessage(ActivityCode.KNOWLEDGE);
 		}
 	}
 	/**
@@ -116,17 +108,17 @@ public class MyCenterActivity extends MyBaseActivity {
 				String data = new HttpHelper(urlPath).doGetString();
 				Log.v("个人中心下载返回数据", data);
 				if (data.equals("-1")) {
-					handlerDownload.sendEmptyMessage(DOWNLOAD_MESSAGE_FAILURE);
+					handlerDownload.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_FAILURE);
 				} 
 				else if (data.equals("0")) {
 				} 
 				else {
 					inboxresult=data;
-					handlerDownload.sendEmptyMessage(DOWNLOAD_MESSAGE_SUCCESS);
+					handlerDownload.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_SUCCESS);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				handlerDownload.sendEmptyMessage(CONNECTION_TIMEOUT);
+				handlerDownload.sendEmptyMessage(HandlerCode.CONNECTION_TIMEOUT);
 			}
 			//下载进程对话框消失
 			showDownloadDialog(false);
@@ -149,7 +141,7 @@ public class MyCenterActivity extends MyBaseActivity {
 	private void saveData(){
 		messagelist=splitMessageString(inboxresult);
 		OADBHelper.saveMessages(messagelist,getApplicationContext());
-		handlerDownload.sendEmptyMessage(DATABASE_MESSAGE_SAVED);
+		handlerDownload.sendEmptyMessage(HandlerCode.DATABASE_MESSAGE_SAVE);
 	}
 	/**
 	 * 从数据库中获取数据填充个人中心列表（eg:消息沟通     1）
@@ -186,19 +178,19 @@ public class MyCenterActivity extends MyBaseActivity {
 			super.handleMessage(msg);
 			Intent intent=new Intent();
 			switch (msg.what) {
-			case COMMECTION:
+			case ActivityCode.COMMECTION:
 				intent.setClass(getApplicationContext(), MessageInboxListAvtivity.class);
 				break;
-			case NOTIFICATION:
+			case ActivityCode.NOTIFICATION:
 				intent.setClass(getApplicationContext(), NoticeListActivity.class);
 				break;
-			case WORKTASK:
+			case ActivityCode.WORKTASK:
 				intent.setClass(getApplicationContext(), Other.class);
 				break;
-			case WORKREMINDER:
+			case ActivityCode.WORKREMINDER:
 				intent.setClass(getApplicationContext(), Other.class);
 				break;
-			case KNOWLEDGE:
+			case ActivityCode.KNOWLEDGE:
 				intent.setClass(getApplicationContext(), KnowledgeListActivity.class);
 				break;
 			}
@@ -210,30 +202,30 @@ public class MyCenterActivity extends MyBaseActivity {
 		public void handleMessage(Message msg) {
 			super.handleMessage(msg);
 			switch (msg.what) {
-			case DOWNLOAD_MESSAGE_BEGIN:
+			case HandlerCode.DOWNLOAD_MESSAGE_BEGIN:
 				Log.v("个人中心", "下载开始");
 				//getMessageString();
 				showDownloadDialog(true);
 				downloadMessage();
 				break;
-			case DOWNLOAD_MESSAGE_SUCCESS:
+			case HandlerCode.DOWNLOAD_MESSAGE_SUCCESS:
 				Log.v("个人中心", "下载成功");
 				//更新列表
 				saveData();
 				break;
-			case DOWNLOAD_MESSAGE_FAILURE:
+			case HandlerCode.DOWNLOAD_MESSAGE_FAILURE:
 				Log.v("个人中心", "下载失败");
 				//getMessageString();
 				downloadMessage();
 				break;
-			case DATABASE_MESSAGE_SAVED:
+			case HandlerCode.DATABASE_MESSAGE_SAVE:
 				Log.v("个人中心", "保存数据");
 				getMyCenterData();
 				mcladapter=new MyCenterListAdapter(getApplicationContext(), mcblist);;
 				mcladapter.notifyDataSetChanged();
 				lv_mycenter.setAdapter(mcladapter);
 				break;
-			case CONNECTION_TIMEOUT:
+			case HandlerCode.CONNECTION_TIMEOUT:
 				Log.v("收件箱", "连接超时");
 				toastTimeOut();
 				break;
@@ -264,7 +256,7 @@ public class MyCenterActivity extends MyBaseActivity {
 	@Override//
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("刷新")) {
-			handlerDownload.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
+			handlerDownload.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
 		}
 		else if (item.getTitle().toString().trim().equals("开始菜单")){
 			this.finish();

@@ -57,7 +57,7 @@ public class NoticeNewActivity extends FinalActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.v("新通知联系人1",receivers);
+		Log.v("新通知联系人1",receivers+"");
 		//填充收件人
 		et_noticereceiver.setText(receivers);
 	}
@@ -68,6 +68,19 @@ public class NoticeNewActivity extends FinalActivity {
 		myname=getIntent().getStringExtra("myname");
 		tv_noticesender.setText(myname);
 	}
+	private String getNoticeContent(){
+		String s="";
+		//myname用户名
+		//noticetitle通知主题
+		//noticecontent通知内容
+		//receivers通知收件人
+		//filepath通知附件路径
+		receivers=et_noticereceiver.getText().toString().trim();
+		noticetitle=et_noticetitle.getText().toString().trim();
+		noticecontent=et_noticenewcontent.getText().toString().trim();
+		filepath=tv_filename.getText().toString().trim();
+		return s;
+	}
 	/**
 	 * 添加收件人
 	 * @param v
@@ -75,7 +88,7 @@ public class NoticeNewActivity extends FinalActivity {
 	public void onClick_AddReceiver(View v){
 		Intent intent=new Intent();
 		intent.setClass(getApplicationContext(), ContactsActivity.class);
-		startActivityForResult(intent, 1000);
+		startActivityForResult(intent, 1002);
 	}
 	/**
 	 * 打开文件资源管理
@@ -88,10 +101,10 @@ public class NoticeNewActivity extends FinalActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == 1000 && resultCode == 1001)
+        if(requestCode == 1002 && resultCode == 1001)
         {
-        	receivers = data.getStringExtra("result");
-            Log.v("新通知联系人2",receivers);
+        	receivers = data.getStringExtra("resultnames");
+            Log.v("新通知联系人2",receivers+"");
             et_noticereceiver.setText(receivers);
         }
     }

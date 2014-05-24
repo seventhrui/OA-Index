@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.HandlerCode;
 import com.example.StateCode;
 import com.example.oa_index.R;
 import com.example.adapter.MessageListAdapter;
@@ -37,12 +38,7 @@ import net.tsz.afinal.annotation.view.ViewInject;
 public class MessageDraftListAvtivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
     @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_messages;
-    private final static int DOWNLOAD_MESSAGE_BEGIN=0;//下载信息
-	private final static int DOWNLOAD_MESSAGE_SUCCESS=1;//下载信息成功
-	private final static int DOWNLOAD_MESSAGE_FAILURE=-1;//下载信息失败
-	private final static int DATABASE_MESSAGE_SAVE=2;//保存信息数据
-	private final static int CONNECTION_TIMEOUT=3;//连接超时
-	private final static int STATE_MESSAGE_ALL=0;//全部
+    
 	private String inboxresult="0";
 	private List<MyMessageBean> messagelist=null;//信息list
 	private MessageListAdapter mesladapter=null;//信息list适配器
@@ -57,8 +53,13 @@ public class MessageDraftListAvtivity extends FinalActivity {
         initView();
         //下载消息
         //handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
-        handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
+        handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
     }
+	@Override
+	protected void onResume() {
+		super.onResume();
+		handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
+	}
 	private void initView(){
     	ActionBar actionbar=getActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -72,8 +73,8 @@ public class MessageDraftListAvtivity extends FinalActivity {
 	public void onClick_gotoMessage(AdapterView<?> arg0, View arg1, int arg2,long arg3){
 		TextView tv_id=(TextView) arg1.findViewById(R.id.tv_message_id);
 		String messageid = tv_id.getText().toString();
-		Intent in = new Intent(getApplicationContext(), MessageShowActivity.class);
-		Bundle bundle = new Bundle();  
+		Intent in = new Intent(getApplicationContext(), MessageDraftShowActivity.class);
+		Bundle bundle = new Bundle();
 		bundle.putCharSequence("messageid", messageid );
 		in.putExtras(bundle);
 		startActivity(in);
@@ -99,19 +100,19 @@ public class MessageDraftListAvtivity extends FinalActivity {
 				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
 					tv_inbox.setText("-1");
-					handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_FAILURE);
+					handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_FAILURE);
 				} 
 				else if (data.equals("0")) {
 					tv_inbox.setText("0");
 				} 
 				else {
 					inboxresult=data;
-					handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_SUCCESS);
+					handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_SUCCESS);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				handlerdealmessage.sendEmptyMessage(CONNECTION_TIMEOUT);
-				handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
+				handlerdealmessage.sendEmptyMessage(HandlerCode.CONNECTION_TIMEOUT);
+				handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
 			}
 			//下载进程对话框消失
 			showDownloadDialog(false);
@@ -138,7 +139,7 @@ public class MessageDraftListAvtivity extends FinalActivity {
 	private void saveData(){
 		messagelist=splitMessageString(inboxresult);
 		OADBHelper.saveMessages(messagelist,getApplicationContext());
-		handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
+		handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
 	}
 	/**
 	 * 填充信息
@@ -172,23 +173,23 @@ public class MessageDraftListAvtivity extends FinalActivity {
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case DOWNLOAD_MESSAGE_BEGIN:
+			case HandlerCode.DOWNLOAD_MESSAGE_BEGIN:
 				Log.v("信息草稿箱", "下载开始");
 				showDownloadDialog(true);
 				downloadMessage();
 				break;
-			case DOWNLOAD_MESSAGE_SUCCESS:
+			case HandlerCode.DOWNLOAD_MESSAGE_SUCCESS:
 				Log.v("信息草稿箱", "下载成功");
 				saveData();
 				break;
-			case DOWNLOAD_MESSAGE_FAILURE:
+			case HandlerCode.DOWNLOAD_MESSAGE_FAILURE:
 				Log.v("信息草稿箱", "下载失败");
 				downloadMessage();
 				break;
-			case DATABASE_MESSAGE_SAVE:
+			case HandlerCode.DATABASE_MESSAGE_SAVE:
 				Log.v("信息草稿箱", "保存数据");
 				break;
-			case CONNECTION_TIMEOUT:
+			case HandlerCode.CONNECTION_TIMEOUT:
 				Log.v("信息草稿箱", "连接超时");
 				toastTimeOut();
 				break;
@@ -201,8 +202,8 @@ public class MessageDraftListAvtivity extends FinalActivity {
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case STATE_MESSAGE_ALL:
-				fillMessageList(STATE_MESSAGE_ALL);
+			case StateCode.STATE_MESSAGE_ALL:
+				fillMessageList(StateCode.STATE_MESSAGE_ALL);
 				break;
 			}
 		}
@@ -230,7 +231,7 @@ public class MessageDraftListAvtivity extends FinalActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("刷新")) {
-			handlerdealmessage.sendEmptyMessage(DOWNLOAD_MESSAGE_BEGIN);
+			handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
 		}
 		//返回
 		else if (item.getItemId()==android.R.id.home){

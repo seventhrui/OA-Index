@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.example.HandlerCode;
+import com.example.StateCode;
 import com.example.oa_index.R;
 import com.example.adapter.MessageListAdapter;
 import com.example.beans.MyMessageBean;
@@ -33,11 +35,7 @@ import net.tsz.afinal.annotation.view.ViewInject;
 public class NoticeListActivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
     @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_notice;
-    private final static int DOWNLOAD_NOTICE_BEGIN=0;//下载通知通告
-	private final static int DOWNLOAD_NOTICE_SUCCESS=1;//下载通知通告成功
-	private final static int DOWNLOAD_NOTICE_FAILURE=-1;//下载通知通告失败
-	private final static int DATABASE_NOTICE_SAVE=2;//保存通知通告数据
-	private final static int STATE_MESSAGE_ALL=0;//全部
+    
 	private String inboxresult="0";
 	private List<MyMessageBean> noticelist=null;//信息list
 	private MessageListAdapter noticelistadapter=null;
@@ -46,7 +44,7 @@ public class NoticeListActivity extends FinalActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_outboxlist);
-        handlersearchnotice.sendEmptyMessage(STATE_MESSAGE_ALL);
+        handlersearchnotice.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
         db = FinalDb.create(this);
         initView();
     }
@@ -87,14 +85,14 @@ public class NoticeListActivity extends FinalActivity {
 				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
 					tv_inbox.setText("-1");
-					handlerdealnotice.sendEmptyMessage(DOWNLOAD_NOTICE_FAILURE);
+					handlerdealnotice.sendEmptyMessage(HandlerCode.DOWNLOAD_NOTICE_FAILURE);
 				} 
 				else if (data.equals("0")) {
 					tv_inbox.setText("0");
 				} 
 				else {
 					inboxresult=data;
-					handlerdealnotice.sendEmptyMessage(DOWNLOAD_NOTICE_SUCCESS);
+					handlerdealnotice.sendEmptyMessage(HandlerCode.DOWNLOAD_NOTICE_SUCCESS);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -122,14 +120,14 @@ public class NoticeListActivity extends FinalActivity {
 	private void saveData(){
 		noticelist=splitNoticeString(inboxresult);
 		OADBHelper.saveMessages(noticelist,getApplicationContext());
-		handlersearchnotice.sendEmptyMessage(STATE_MESSAGE_ALL);
+		handlersearchnotice.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
 	}
 	/**
 	 * 填充通知通告
 	 */
 	private void fillNoticeList(int state){
 		List<MyMessageBean> messlist=null;
-    	if(state==STATE_MESSAGE_ALL){
+    	if(state==StateCode.STATE_MESSAGE_ALL){
     		messlist=db.findAll(MyMessageBean.class,"message_sendtime");
     	}
     	Log.v("通知通告发件箱数量", messlist.size()+"");
@@ -143,19 +141,19 @@ public class NoticeListActivity extends FinalActivity {
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case DOWNLOAD_NOTICE_BEGIN:
+			case HandlerCode.DOWNLOAD_NOTICE_BEGIN:
 				Log.v("通知通告发件箱", "下载开始");
 				downloadNotice();
 				break;
-			case DOWNLOAD_NOTICE_SUCCESS:
+			case HandlerCode.DOWNLOAD_NOTICE_SUCCESS:
 				Log.v("通知通告发件箱", "下载成功");
 				saveData();
 				break;
-			case DOWNLOAD_NOTICE_FAILURE:
+			case HandlerCode.DOWNLOAD_NOTICE_FAILURE:
 				Log.v("通知通告发件箱", "下载失败");
 				downloadNotice();
 				break;
-			case DATABASE_NOTICE_SAVE:
+			case HandlerCode.DATABASE_NOTICE_SAVE:
 				Log.v("通知通告发件箱", "保存数据");
 				break;
 			}
@@ -167,8 +165,8 @@ public class NoticeListActivity extends FinalActivity {
 		public void handleMessage(Message msg) {
 			int whatVal = msg.what;
 			switch (whatVal) {
-			case STATE_MESSAGE_ALL:
-				fillNoticeList(STATE_MESSAGE_ALL);
+			case StateCode.STATE_MESSAGE_ALL:
+				fillNoticeList(StateCode.STATE_MESSAGE_ALL);
 				break;
 			}
 		}
@@ -197,7 +195,7 @@ public class NoticeListActivity extends FinalActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("刷新")) {
 			Toast.makeText(getApplicationContext(), item.getTitle()+"", Toast.LENGTH_SHORT).show();
-			handlerdealnotice.sendEmptyMessage(DOWNLOAD_NOTICE_BEGIN);
+			handlerdealnotice.sendEmptyMessage(HandlerCode.DOWNLOAD_NOTICE_BEGIN);
 		}
 		//返回
 		else if (item.getItemId()==android.R.id.home){

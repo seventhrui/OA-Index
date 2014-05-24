@@ -16,11 +16,13 @@ import net.tsz.afinal.annotation.sqlite.Table;
 @Table(name = "oa_organization")//设置表名
 public class OrganizationBean {
 	@Id(column="organizationid")//设置主键
-	public String organizationid;//组织机构编号
-	public String organizationname;//组织机构名称
-	public String organizationgdepth;//组织机构深度
-	public String organizationparent;//组织机构父节点编号
-	
+	private String organizationid;//组织机构编号
+	private String organizationname;//组织机构名称
+	private String organizationgdepth;//组织机构深度
+	private String organizationparent;//组织机构父节点编号
+	public OrganizationBean(){
+		
+	}
 	public OrganizationBean(String name,String num,String depth,String parent){
 		this.organizationname=name;
 		this.organizationid=num;

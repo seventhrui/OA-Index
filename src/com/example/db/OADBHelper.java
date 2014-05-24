@@ -40,4 +40,8 @@ public class OADBHelper {
 			
 		}
 	}
+	public static void deleteMessage(String id,Context context){
+		FinalDb db = FinalDb.create(context);
+		db.deleteById(MyMessageBean.class, id);
+	}
 }

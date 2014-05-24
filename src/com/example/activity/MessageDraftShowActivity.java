@@ -3,6 +3,7 @@ package com.example.activity;
 import java.io.File;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.example.HandlerCode;
@@ -35,11 +36,12 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 import net.tsz.afinal.FinalActivity;
+import net.tsz.afinal.FinalDb;
 import net.tsz.afinal.annotation.view.ViewInject;
 /**
- * 新信息
+ * 信息草稿
  */
-public class MessageNewActivity extends FinalActivity {
+public class MessageDraftShowActivity extends FinalActivity {
 	private final static int openfileDialogId = 0;
 	private final static int copyfileDialogId = 1;
 	private String messageid="";//信息id
@@ -70,7 +72,7 @@ public class MessageNewActivity extends FinalActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.v("新信息联系人1",receiverids);
+		Log.v("信息草稿联系人1",receiverids);
 		//填充收件人
 		et_messagereceiver.setText(receivers);
 	}
@@ -80,7 +82,34 @@ public class MessageNewActivity extends FinalActivity {
 		
 		myname=LoginConfig.getLoginConfig().getMyname();
 		tv_messagesender.setText(myname);
+		showMessage();
 	}
+	/**
+     * 在控件中添加信息详情
+     */
+    private void showMessage(){
+    	messageid=getIntent().getStringExtra("messageid");
+    	FinalDb db = FinalDb.create(this);
+    	List<MyMessageBean> messlist=db.findAllByWhere(MyMessageBean.class, "message_id='"+messageid+"'");
+    	for(int i=0;i<messlist.size();i++){
+    		et_messagetitle.setText(messlist.get(i).getMessage_title());
+			if(messlist.get(i).getMessage_sender() != null){
+				tv_messagesender.setText(messlist.get(i).getMessage_sender().trim());
+			}
+			else
+				tv_messagesender.setText("");
+    		if(messlist.get(i).getMessage_hasfile().equals("0"))
+    			tv_filename.setVisibility(View.INVISIBLE);
+			else{
+				filename=messlist.get(i).getMessage_filename();
+				tv_filename.setText(filename);
+			}
+			messagecontent=messlist.get(i).getMessage_content();
+			if(messagecontent.isEmpty())
+				messagecontent=" ";
+			et_newcontent.setText(messagecontent);
+    	}
+    }
 	/**
 	 * 添加收件人
 	 * @param v
@@ -105,7 +134,7 @@ public class MessageNewActivity extends FinalActivity {
         {
         	receivers = data.getStringExtra("resultnames");
         	receiverids=data.getStringExtra("receiverids");
-            Log.v("新信息联系人2",receiverids);
+            Log.v("信息草稿联系人2",receiverids);
             et_messagereceiver.setText(receivers);
         }
     }
@@ -138,15 +167,24 @@ public class MessageNewActivity extends FinalActivity {
 				Toast.makeText(getApplicationContext(), "发送附件失败", Toast.LENGTH_SHORT).show();
 				break;
 			case HandlerCode.CONNECTION_TIMEOUT:
-				Log.v("收件箱", "连接超时");
+				Log.v("信息草稿", "连接超时");
 				toastTimeOut();
 				break;
-			case HandlerCode.SAVE_MESSAGE_DRAFT:
-				saveMessage(StateCode.MESSAGE_TYPE_DRAFT);//存草稿
+			case HandlerCode.DELETE:
+				deleteMessage();//删除草稿
 				break;
 			}
 		}
 	};
+	/**
+	 * 删除草稿
+	 * @param mid
+	 */
+	private void deleteMessage(){
+		OADBHelper.deleteMessage(messageid, getApplicationContext());
+		Toast.makeText(getApplicationContext(), "删除成功", Toast.LENGTH_SHORT).show();
+		this.finish();
+	}
 	/**
 	 * 获取信息内容
 	 * @return String
@@ -162,7 +200,7 @@ public class MessageNewActivity extends FinalActivity {
 		filename=tv_filename.getText().toString().trim();//附件名
 		if(!filename.equals(""))//如果有附件则将 hasfile 置一
 			hasfile="1";
-		messageid=StringUtils.GenerateGUID(11);//生成32为的信息id
+		//messageid=StringUtils.GenerateGUID(11);//生成32为的信息id
 		// 收件人ID|收件人名字|标题|内容|有无附件|消息ID
 		contnet=receiverids+"|"+receivers+"|"+messagetitle+"|"+messagecontent+"|"+hasfile+"|"+messageid;
 		return contnet;
@@ -180,15 +218,15 @@ public class MessageNewActivity extends FinalActivity {
 		public void run() {
 			sendmessagecontent=getMessageContent();
 			try {
-				Log.v("新建信息", "发送数据");
+				Log.v("信息草稿", "发送数据");
 				String url=LoginConfig.getLoginConfig().getServerip();
 				String userid=LoginConfig.getLoginConfig().getUserid();
 				String myname=LoginConfig.getLoginConfig().getMyname();
 				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=3&uid="+userid+"&uname="+URLEncoder.encode(myname, "UTF-8");//内网ip
-				Log.v("新建信息发送地址", urlPath);
+				Log.v("信息草稿发送地址", urlPath);
 				// 连接服务器成功之后，解析数据
 				String data = new HttpHelper(urlPath).doPostString(sendmessagecontent);
-				Log.v("新建信息发送返回值",data); 
+				Log.v("信息草稿发送返回值",data); 
 				if (data.equals("0")) {
 					handlerSendMessage.sendEmptyMessage(HandlerCode.SEND_MESSAGE_FAILURE);
 				} 
@@ -219,9 +257,9 @@ public class MessageNewActivity extends FinalActivity {
 				String fname=StringUtils.TimeString()+"$"+StringUtils.Path2FileName(filepath);
 				String url=LoginConfig.getLoginConfig().getServerip();
 				String urlPath="http://"+url+"/oa/ashx/Ioa.ashx?ot=4&mid="+messageid+"&fn="+fname;
-				Log.v("新建信息发送文件", urlPath);
+				Log.v("信息草稿发送文件", urlPath);
 				String data = new HttpHelper(urlPath).uploadFile(file);
-				Log.v("新建信息发送返回值",data); 
+				Log.v("信息草稿发送返回值",data); 
 				if (data.equals("0")) {
 					handlerSendMessage.sendEmptyMessage(HandlerCode.SEND_FILE_FAILURE);
 				} 
@@ -236,22 +274,21 @@ public class MessageNewActivity extends FinalActivity {
 		
 	};
 	/**
-	 * 保存草稿
+	 * 保存信息
 	 * @param mmb
 	 */
 	private void saveMessage(String type){
 		getMessageContent();
 		MyMessageBean mmb=new MyMessageBean(messageid, LoginConfig.getLoginConfig().getMyname(), "", messagetitle, messagecontent, hasfile, filename, "0", type);
-		Log.v("存草稿：", "mmsid="+messageid+"receivers="+""); 
+		Log.v("草稿：", "mmsid="+messageid+"receivers="+""); 
 		OADBHelper.saveMessage(mmb, getApplicationContext());
-		Toast.makeText(getApplicationContext(), "保存成功", Toast.LENGTH_SHORT).show();
 	}
 	/**
 	 * 下载进程对话框
 	 */
 	private void showDownloadDialog(boolean b){
 		if(b)
-			dialog=ProgressDialog.show(MessageNewActivity.this,"正在发送...","请稍后",true,true);//显示下载进程对话框
+			dialog=ProgressDialog.show(MessageDraftShowActivity.this,"正在发送...","请稍后",true,true);//显示下载进程对话框
 		else
 			dialog.dismiss();//下载进程对话框消失
 	}
@@ -305,7 +342,7 @@ public class MessageNewActivity extends FinalActivity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.menu_message_new, menu);
+		getMenuInflater().inflate(R.menu.menu_message_deaftshow, menu);
 		return true;
 	}
 	@Override
@@ -313,8 +350,8 @@ public class MessageNewActivity extends FinalActivity {
 		if (item.getTitle().toString().trim().equals("发送")) {
 			handlerSendMessage.sendEmptyMessage(HandlerCode.SEND_MESSAGE_BEGIN);
 		}
-		else if(item.getItemId()==R.id.action_save){
-			handlerSendMessage.sendEmptyMessage(HandlerCode.SAVE_MESSAGE_DRAFT);
+		else if (item.getTitle().toString().trim().equals("删除")) {
+			handlerSendMessage.sendEmptyMessage(HandlerCode.DELETE);
 		}
 		else if (item.getItemId()==android.R.id.home){
 			this.finish();
