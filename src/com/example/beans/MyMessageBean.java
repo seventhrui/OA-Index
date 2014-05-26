@@ -1,12 +1,10 @@
-/**
- * 信息 MyMessageBean
- */
 package com.example.beans;
 
 import net.tsz.afinal.annotation.sqlite.Id;
 import net.tsz.afinal.annotation.sqlite.Table;
 
 /**
+ * 信息 MyMessageBean
  * 0.信息id <br/>
  * 1.发信人 <br/>
  * 2.发信时间  <br/>

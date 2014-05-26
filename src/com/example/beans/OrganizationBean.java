@@ -1,6 +1,3 @@
-/**
- * 组织机构OrganizationBean
- */
 package com.example.beans;
 
 import net.tsz.afinal.annotation.sqlite.Id;

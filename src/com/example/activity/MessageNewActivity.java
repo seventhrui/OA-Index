@@ -157,8 +157,7 @@ public class MessageNewActivity extends FinalActivity {
 		receivers=et_messagereceiver.getText().toString().trim();//收件人名称
 		messagetitle=et_messagetitle.getText().toString().trim();//信息标题
 		messagecontent=et_newcontent.getText().toString().trim();//信息内容
-		//过滤关键字“|”
-		messagecontent=messagecontent.replaceAll("\\|", "");
+		messagecontent=messagecontent.replaceAll("\\|", "");//过滤关键字“|”
 		filename=tv_filename.getText().toString().trim();//附件名
 		if(!filename.equals(""))//如果有附件则将 hasfile 置一
 			hasfile="1";

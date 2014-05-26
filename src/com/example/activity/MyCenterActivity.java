@@ -204,7 +204,6 @@ public class MyCenterActivity extends MyBaseActivity {
 			switch (msg.what) {
 			case HandlerCode.DOWNLOAD_MESSAGE_BEGIN:
 				Log.v("个人中心", "下载开始");
-				//getMessageString();
 				showDownloadDialog(true);
 				downloadMessage();
 				break;
@@ -215,7 +214,6 @@ public class MyCenterActivity extends MyBaseActivity {
 				break;
 			case HandlerCode.DOWNLOAD_MESSAGE_FAILURE:
 				Log.v("个人中心", "下载失败");
-				//getMessageString();
 				downloadMessage();
 				break;
 			case HandlerCode.DATABASE_MESSAGE_SAVE:

@@ -1,11 +1,9 @@
-/**
- * 用户UserBean
- */
 package com.example.beans;
 
 import net.tsz.afinal.annotation.sqlite.Id;
 import net.tsz.afinal.annotation.sqlite.Table;
 /**
+ * 用户UserBean
  * userid 联系人id<br/>
  * username 联系人名称<br/>
  * userorga 联系人所属机构编号<br/>

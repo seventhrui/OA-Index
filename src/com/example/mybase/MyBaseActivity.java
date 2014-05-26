@@ -6,7 +6,10 @@ import android.widget.Toast;
 import com.example.oa_index.R;
 
 import net.tsz.afinal.FinalActivity;
-
+/**
+ * 给Activity添加 点击两次返回按钮退出
+ *
+ */
 public class MyBaseActivity extends FinalActivity {
 
 	// 按返回键退出应用

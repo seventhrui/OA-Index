@@ -30,6 +30,7 @@
                 android:layout_height="wrap_content"
                 android:text="类型："/>
             <TextView 
+                android:id="@+id/tv_knowledgetype"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="供电业务资料  "/>
@@ -42,7 +43,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="日期："/>
-            <TextView 
+            <TextView
+                android:id="@+id/tv_knowledgepublictime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="2014/4/20 21:47:01 "/>
@@ -55,7 +57,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="发布人："/>
-            <TextView 
+            <TextView
+                android:id="@+id/tv_knowledgeissuer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="XXX"/>
@@ -68,7 +71,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="内容："/>
-            <TextView 
+            <WebView 
+                android:id="@+id/wv_knowledgecontent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="XXX"/>
@@ -81,7 +85,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="附件："/>
-            <Button 
+            <Button
+                android:id="@+id/bt_searchfile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"

@@ -7,13 +7,13 @@ import java.util.List;
 import com.example.HandlerCode;
 import com.example.StateCode;
 import com.example.oa_index.R;
-import com.example.adapter.MessageListAdapter;
-import com.example.beans.LoginConfig;
-import com.example.beans.MyMessageBean;
+import com.example.adapter.NoticeListAdapter;
+import com.example.beans.MyNoticeBean;
 import com.example.db.OADBHelper;
 import com.example.http.HttpHelper;
 
 import android.app.ActionBar;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -35,12 +35,13 @@ import net.tsz.afinal.annotation.view.ViewInject;
  */
 public class NoticeDraftListActivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
-    @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_notice;
+    @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoNotice") ListView lv_notice;//通知通告列表
     
 	private String inboxresult="0";
-	private List<MyMessageBean> noticelist=null;//信息list
-	private MessageListAdapter noticelistadapter=null;
+	private List<MyNoticeBean> noticelist=null;//通知list
+	private NoticeListAdapter noticelistadapter=null;
 	private FinalDb db = null;
+	private ProgressDialog dialog=null;//下载进程对话框
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +50,13 @@ public class NoticeDraftListActivity extends FinalActivity {
         db = FinalDb.create(this);
         initView();
     }
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		handlerdealnotice.sendEmptyMessage(HandlerCode.DOWNLOAD_NOTICE_BEGIN);
+	}
+	
 	private void initView(){
     	ActionBar actionbar=getActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
@@ -81,42 +89,39 @@ public class NoticeDraftListActivity extends FinalActivity {
 		public void run() {
 			try {
 				Log.v("通知通告发件箱", "下载数据");
-				
-				String url=LoginConfig.getLoginConfig().getServerip();
-				String userid=LoginConfig.getLoginConfig().getUserid();
-				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=2&uid="+userid;//内网ip
-				
+				String urlPath = "http://192.168.0.143:32768/oa/ashx/Ioa.ashx?ot=2&uid=20121015095350990612c4db3cab4725";//内网ip
 				// 连接服务器成功之后，解析数据
 				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
-					tv_inbox.setText("-1");
 					handlerdealnotice.sendEmptyMessage(HandlerCode.DOWNLOAD_NOTICE_FAILURE);
 				} 
 				else if (data.equals("0")) {
-					tv_inbox.setText("0");
+					handlerdealnotice.sendEmptyMessage(HandlerCode.DOWNLOAD_NOTICE_FAILURE);
 				} 
 				else {
 					inboxresult=data;
 					handlerdealnotice.sendEmptyMessage(HandlerCode.DOWNLOAD_NOTICE_SUCCESS);
 				}
 			} catch (Exception e) {
-				e.printStackTrace();
+				handlerdealnotice.sendEmptyMessage(HandlerCode.CONNECTION_TIMEOUT);
+				handlersearchnotice.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
 			}
+			showDownloadDialog(false);
 		}
 	};
 	/**
 	 * 拆分通知通告字符串
 	 */
-	private List<MyMessageBean> splitNoticeString(String str){
+	private List<MyNoticeBean> splitNoticeString(String str){
 		Log.v("通知通告发件箱", "分割数据");
-		List<MyMessageBean> mlist=new ArrayList<MyMessageBean>();
-		String[] messages=str.split("\\|");
-		for(String s:messages){
-			String[] message=s.split("\\^");
-			//MyMessageBean m=new MyMessageBean(message[0],message[1],message[2],message[3],message[4],message[5],message[6],message[7]);
+		List<MyNoticeBean> mlist=new ArrayList<MyNoticeBean>();
+		String[] notices=str.split("\\|");
+		for(String s:notices){
+			String[] notice=s.split("\\^");
+			//MyNoticeBean m=new MyNoticeBean(notice[0],notice[1],notice[2],notice[3],notice[4],notice[5],notice[6],notice[7]);
 			//mlist.add(m);
 		}
-		tv_inbox.setText(messages.length+"");
+		tv_inbox.setText(notices.length+"");
 		return mlist;
 	}
 	/**
@@ -124,21 +129,36 @@ public class NoticeDraftListActivity extends FinalActivity {
 	 */
 	private void saveData(){
 		noticelist=splitNoticeString(inboxresult);
-		OADBHelper.saveMessages(noticelist,getApplicationContext());
+		//OADBHelper.saveNotices(noticelist,getApplicationContext());
 		handlersearchnotice.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
 	}
 	/**
 	 * 填充通知通告
 	 */
 	private void fillNoticeList(int state){
-		List<MyMessageBean> messlist=null;
+		List<MyNoticeBean> noticelist=null;
     	if(state==StateCode.STATE_MESSAGE_ALL){
-    		messlist=db.findAll(MyMessageBean.class,"message_sendtime");
+    		noticelist=db.findAll(MyNoticeBean.class,"notice_sendtime");
     	}
-    	Log.v("通知通告发件箱数量", messlist.size()+"");
-    	noticelistadapter=new MessageListAdapter(getApplicationContext(), messlist);
+    	Log.v("通知通告发件箱数量", noticelist.size()+"");
+    	noticelistadapter=new NoticeListAdapter(getApplicationContext(), noticelist);
     	noticelistadapter.notifyDataSetChanged();
 		lv_notice.setAdapter(noticelistadapter);
+	}
+	/**
+	 * 下载进程对话框
+	 */
+	private void showDownloadDialog(boolean b){
+		if(b)
+			dialog=ProgressDialog.show(NoticeDraftListActivity.this,"正在加载...","请稍后",true,true);//显示下载进程对话框
+		else
+			dialog.dismiss();//下载进程对话框消失
+	}
+	/**
+	 * 提示下载超时
+	 */
+	private void toastTimeOut(){
+		Toast.makeText(getApplicationContext(), R.string.timeout, Toast.LENGTH_LONG).show();
 	}
 	//下载信息
 	private Handler handlerdealnotice=new Handler(){
@@ -148,6 +168,7 @@ public class NoticeDraftListActivity extends FinalActivity {
 			switch (whatVal) {
 			case HandlerCode.DOWNLOAD_NOTICE_BEGIN:
 				Log.v("通知通告发件箱", "下载开始");
+				showDownloadDialog(true);
 				downloadNotice();
 				break;
 			case HandlerCode.DOWNLOAD_NOTICE_SUCCESS:
@@ -160,6 +181,10 @@ public class NoticeDraftListActivity extends FinalActivity {
 				break;
 			case HandlerCode.DATABASE_NOTICE_SAVE:
 				Log.v("通知通告发件箱", "保存数据");
+				break;
+			case HandlerCode.CONNECTION_TIMEOUT:
+				Log.v("收件箱", "连接超时");
+				toastTimeOut();
 				break;
 			}
 		}

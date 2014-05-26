@@ -338,6 +338,9 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * Ìø×ªActivity
+	 */
 	Handler handler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {

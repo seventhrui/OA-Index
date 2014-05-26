@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import com.example.oa_index.R;
+import com.example.beans.LoginConfig;
 import com.example.beans.MyMessageBean;
 import com.example.db.OADBHelper;
 
@@ -103,7 +104,8 @@ public class MessageShowActivity extends FinalActivity {
      */
     public void startDownload(String fname) {
 		mgr = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-		fileurl="http://192.168.0.143:32768/OA/Messages/MessageAttachment/"+fname;
+		String url=LoginConfig.getLoginConfig().getServerip();
+		fileurl="http://"+url+"/OA/Messages/MessageAttachment/"+fname;
 		filepath=Environment.getExternalStorageDirectory().toString()+"/OA/"+fname;
 		if(new File(filepath).exists()){
 			Intent intent = new Intent(); 
@@ -153,7 +155,6 @@ public class MessageShowActivity extends FinalActivity {
 	        e.printStackTrace();
 	    }
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

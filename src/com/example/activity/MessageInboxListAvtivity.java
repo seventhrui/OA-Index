@@ -33,7 +33,7 @@ import net.tsz.afinal.FinalActivity;
 import net.tsz.afinal.FinalDb;
 import net.tsz.afinal.annotation.view.ViewInject;
 /**
- * 收件箱
+ * 收件箱（消息沟通）
  */
 public class MessageInboxListAvtivity extends FinalActivity {
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
@@ -101,16 +101,15 @@ public class MessageInboxListAvtivity extends FinalActivity {
 				Log.v("收件箱", "下载数据");
 				String url=LoginConfig.getLoginConfig().getServerip();
 				String userid=LoginConfig.getLoginConfig().getUserid();
-				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=2&uid="+userid;//内网ip
+				String urlPath = "http://"+url+"/oa/ashx/Ioa.ashx?ot=2&uid="+userid;
 				Log.v("信息地址", urlPath);
 				// 连接服务器成功之后，解析数据
 				String data = new HttpHelper(urlPath).doGetString();
 				if (data.equals("-1")) {
-					tv_inbox.setText("-1");
 					handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_FAILURE);
 				} 
 				else if (data.equals("0")) {
-					tv_inbox.setText("0");
+					handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_FAILURE);
 				} 
 				else {
 					inboxresult=data;
@@ -199,7 +198,7 @@ public class MessageInboxListAvtivity extends FinalActivity {
 				break;
 			case HandlerCode.DOWNLOAD_MESSAGE_FAILURE:
 				Log.v("收件箱", "下载失败");
-				downloadMessage();
+				//downloadMessage();
 				break;
 			case HandlerCode.DATABASE_MESSAGE_SAVE:
 				Log.v("收件箱", "保存数据");
