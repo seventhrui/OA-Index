@@ -36,7 +36,7 @@ public class FunAndFunType {
 	 */
 	public static SimpleAdapter getNotifyFuns(Context context){
 		lstImageItem = new ArrayList<HashMap<String, Object>>();
-		Integer[] mIds = { R.drawable.ic_launcher,R.drawable.ic_launcher, R.drawable.ic_launcher, R.drawable.ic_launcher };
+		Integer[] mIds = { R.drawable.notice_xj,R.drawable.notice_cg, R.drawable.notice_lb, R.drawable.notice_yf };
 		String[] mNames = { "发布通知", "通知草稿", "通知列表", "通知已发" };
 		for (int i = 0; i < mIds.length; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -58,7 +58,7 @@ public class FunAndFunType {
 	 */
 	public static SimpleAdapter getMessageFuns(Context context){
 		lstImageItem = new ArrayList<HashMap<String, Object>>();
-		Integer[] mIds = { R.drawable.ic_launcher, R.drawable.ic_launcher,R.drawable.ic_launcher, R.drawable.ic_launcher, R.drawable.ic_launcher };
+		Integer[] mIds = { R.drawable.message_xj, R.drawable.message_ys,R.drawable.message_yf, R.drawable.message_cg, R.drawable.message_hs };
 		String[] mNames = { "新信息", "已收信息", "已发信息", "信息草稿", "信息回收" };
 		for (int i = 0; i < mIds.length; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -80,7 +80,7 @@ public class FunAndFunType {
 	 */
 	public static SimpleAdapter getOvertimeSickFuns(Context context){
 		lstImageItem = new ArrayList<HashMap<String, Object>>();
-		Integer[] mIds = { R.drawable.ic_launcher, R.drawable.ic_launcher, R.drawable.ic_launcher,R.drawable.ic_launcher, R.drawable.ic_launcher, R.drawable.ic_launcher };
+		Integer[] mIds = { R.drawable.timesick_qj, R.drawable.timesick_jb, R.drawable.timesick_sp,R.drawable.timesick_cy, R.drawable.timesick_tj, R.drawable.timesick_gd };
 		String[] mNames = { "我要请假", "加班申请", "加班请假审批", "加班请假查阅", "请假调休统计","归档" };
 		for (int i = 0; i < mIds.length; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -102,7 +102,7 @@ public class FunAndFunType {
 	 */
 	public static SimpleAdapter getWorkRecordFuns(Context context){
 		lstImageItem = new ArrayList<HashMap<String, Object>>();
-		Integer[] mIds = { R.drawable.ic_launcher, R.drawable.ic_launcher,R.drawable.ic_launcher, R.drawable.ic_launcher };
+		Integer[] mIds = { R.drawable.workrecord_bj, R.drawable.workrecord_xc,R.drawable.workrecord_hzxc, R.drawable.workrecord_sb };
 		String[] mNames = { "工作写实编辑", "工作写实查询", "工作写实汇总查询", "工作写实上报"};
 		for (int i = 0; i < mIds.length; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -124,7 +124,7 @@ public class FunAndFunType {
 	 */
 	public static SimpleAdapter getWorkPlanFuns(Context context){
 		lstImageItem = new ArrayList<HashMap<String, Object>>();
-		Integer[] mIds = { R.drawable.ic_launcher, R.drawable.ic_launcher, R.drawable.ic_launcher,R.drawable.ic_launcher, R.drawable.ic_launcher };
+		Integer[] mIds = { R.drawable.workplan_jh, R.drawable.workplan_zj, R.drawable.workplan_cx,R.drawable.workplan_xmpz, R.drawable.workplan_bmpz };
 		String[] mNames = { "计划填写", "总结填写", "计划总结查询", "项目配置","部门项目配置"};
 		for (int i = 0; i < mIds.length; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -146,7 +146,7 @@ public class FunAndFunType {
 	 */
 	public static SimpleAdapter getWorkPerformanceCheckFuns(Context context){
 		lstImageItem = new ArrayList<HashMap<String, Object>>();
-		Integer[] mIds = { R.drawable.ic_launcher, R.drawable.ic_launcher };
+		Integer[] mIds = { R.drawable.workcheck_df, R.drawable.workcheck_xc };
 		String[] mNames = { "员工绩效打分", "绩效考核查询"};
 		for (int i = 0; i < mIds.length; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();
@@ -168,7 +168,7 @@ public class FunAndFunType {
 	 */
 	public static SimpleAdapter getWorkKnowledgeCenterFuns(Context context){
 		lstImageItem = new ArrayList<HashMap<String, Object>>();
-		Integer[] mIds = {R.drawable.ic_launcher, R.drawable.ic_launcher, R.drawable.ic_launcher,R.drawable.ic_launcher, R.drawable.ic_launcher };
+		Integer[] mIds = {R.drawable.knowledge_ck, R.drawable.knowledge_fb, R.drawable.knowledge_mlgl,R.drawable.knowledge_lxck, R.drawable.knowledge_gl };
 		String[] mNames = { "查看知识", "发布新知识","知识目录管理","知识类型管理","知识管理"};
 		for (int i = 0; i < mIds.length; i++) {
 			HashMap<String, Object> map = new HashMap<String, Object>();

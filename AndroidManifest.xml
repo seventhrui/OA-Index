@@ -78,6 +78,7 @@
             android:label="@string/activity_contacts"/>
         <activity 
             android:name="com.example.activity.StartMenuActivity"
+            android:icon="@drawable/startmenu"
             android:label="@string/action_startmenu"/>
         <activity
             android:name="com.example.activity.RequestLeaveActivity"

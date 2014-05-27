@@ -101,24 +101,31 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 		SimpleAdapter sladapter=null;
 		if(type.equals("通知通告")){
 			sladapter=FunAndFunType.getNotifyFuns(getApplicationContext());
+			actionbar.setIcon(R.drawable.notice_);
 		}
 		else if(type.equals("信息沟通")){
 			sladapter=FunAndFunType.getMessageFuns(getApplicationContext());
+			actionbar.setIcon(R.drawable.message_);
 		}
 		else if(type.equals("加班请假")){
 			sladapter=FunAndFunType.getOvertimeSickFuns(getApplicationContext());
+			actionbar.setIcon(R.drawable.timesick_);
 		}
 		else if(type.equals("工作写实")){
 			sladapter=FunAndFunType.getWorkRecordFuns(getApplicationContext());
+			actionbar.setIcon(R.drawable.workrecord_);
 		}
 		else if(type.equals("计划总结")){
 			sladapter=FunAndFunType.getWorkPlanFuns(getApplicationContext());
+			actionbar.setIcon(R.drawable.workplan_);
 		}
 		else if(type.equals("绩效考核")){
 			sladapter=FunAndFunType.getWorkPerformanceCheckFuns(getApplicationContext());
+			actionbar.setIcon(R.drawable.workcheck_);
 		}
 		else if(type.equals("知识中心")){
 			sladapter=FunAndFunType.getWorkKnowledgeCenterFuns(getApplicationContext());
+			actionbar.setIcon(R.drawable.knowledge_);
 		}
 		return sladapter;
 	}
@@ -246,6 +253,7 @@ public class StartMenuActivity extends FinalActivity implements OnTouchListener 
 	 * 将屏幕滚动到menu界面，滚动速度设定为30.
 	 */
 	private void scrollToMenu() {
+		actionbar.setIcon(R.drawable.startmenu);
 		new ScrollTask().execute(30);
 	}
 
