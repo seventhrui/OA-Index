@@ -12,6 +12,7 @@ import com.example.beans.LoginConfig;
 import com.example.beans.MyMessageBean;
 import com.example.db.OADBHelper;
 import com.example.http.HttpHelper;
+import android.support.v4.widget.SwipeRefreshLayout;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
@@ -35,12 +36,13 @@ import net.tsz.afinal.annotation.view.ViewInject;
 /**
  * 收件箱（消息沟通）
  */
-public class MessageInboxListAvtivity extends FinalActivity {
+public class MessageInboxListAvtivity extends FinalActivity implements SwipeRefreshLayout.OnRefreshListener{
     @ViewInject(id=R.id.tv_inbox) TextView tv_inbox;
     @ViewInject(id=R.id.lv_messages,itemClick="onClick_gotoMessage") ListView lv_messages;
     
 	private String inboxresult="0";
 	private String myname="";//用户名字
+	private SwipeRefreshLayout swipeLayout;
 	private List<MyMessageBean> messagelist=null;//信息list
 	private MessageListAdapter mesladapter=null;//信息list适配器
 	private FinalDb db = null;
@@ -53,7 +55,8 @@ public class MessageInboxListAvtivity extends FinalActivity {
         db = FinalDb.create(this);
         initView();
         //下载消息
-        handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
+        onRefresh();
+        //handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
         //handlersearchmessage.sendEmptyMessage(STATE_MESSAGE_ALL);
     }
 	
@@ -61,7 +64,8 @@ public class MessageInboxListAvtivity extends FinalActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
+		onRefresh();
+		//handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
 	}
 
 
@@ -69,6 +73,15 @@ public class MessageInboxListAvtivity extends FinalActivity {
     	ActionBar actionbar=getActionBar();
         actionbar.setDisplayHomeAsUpEnabled(true);
         getOverflowMenu();
+        
+        // 下拉刷新初始化设置
+ 		swipeLayout = (SwipeRefreshLayout) findViewById(R.id.swipe_container);
+ 		swipeLayout.setOnRefreshListener(this);
+ 		swipeLayout.setColorScheme(android.R.color.holo_blue_bright,
+ 				android.R.color.holo_green_light,
+ 				android.R.color.holo_orange_light,
+ 				android.R.color.holo_red_light);
+        
         myname=LoginConfig.getLoginConfig().getMyname();
     }
 
@@ -121,7 +134,8 @@ public class MessageInboxListAvtivity extends FinalActivity {
 				handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
 			}
 			//下载进程对话框消失
-			showDownloadDialog(false);
+			//showDownloadDialog(false);
+			swipeLayout.setRefreshing(false);
 		}
 	};
 	/**
@@ -169,12 +183,12 @@ public class MessageInboxListAvtivity extends FinalActivity {
 	/**
 	 * 下载进程对话框
 	 */
-	private void showDownloadDialog(boolean b){
+	/*private void showDownloadDialog(boolean b){
 		if(b)
 			dialog=ProgressDialog.show(MessageInboxListAvtivity.this,"正在加载...","请稍后",true,true);//显示下载进程对话框
 		else
 			dialog.dismiss();//下载进程对话框消失
-	}
+	}*/
 	/**
 	 * 提示下载超时
 	 */
@@ -189,7 +203,7 @@ public class MessageInboxListAvtivity extends FinalActivity {
 			switch (whatVal) {
 			case HandlerCode.DOWNLOAD_MESSAGE_BEGIN:
 				Log.v("收件箱", "下载开始");
-				showDownloadDialog(true);
+				//showDownloadDialog(true);
 				downloadMessage();
 				break;
 			case HandlerCode.DOWNLOAD_MESSAGE_SUCCESS:
@@ -228,6 +242,13 @@ public class MessageInboxListAvtivity extends FinalActivity {
 			}
 		}
 	};
+	
+	@Override
+	public void onRefresh() {
+		// TODO Auto-generated method stub
+		handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
+	}
+	
 	/**
 	 * 三点菜单
 	 */
@@ -251,7 +272,8 @@ public class MessageInboxListAvtivity extends FinalActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		if (item.getTitle().toString().trim().equals("刷新")) {
-			handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
+			onRefresh();
+			//handlerdealmessage.sendEmptyMessage(HandlerCode.DOWNLOAD_MESSAGE_BEGIN);
 		}
 		//未读
 		else if (item.getTitle().toString().trim().equals("未读")) {
@@ -264,6 +286,13 @@ public class MessageInboxListAvtivity extends FinalActivity {
 		//全部
 		else if (item.getTitle().toString().trim().equals("全部")) {
 			handlersearchmessage.sendEmptyMessage(StateCode.STATE_MESSAGE_ALL);
+		}
+		//开始菜单
+		else if (item.getTitle().toString().trim().equals("开始菜单")){
+			this.finish();
+			Intent intent=new Intent();
+			intent.setClass(getApplicationContext(), StartMenuActivity.class);
+			startActivity(intent);
 		}
 		//返回
 		else if (item.getItemId()==android.R.id.home){

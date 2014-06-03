@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
 /**
  * 收件箱列表adapter
  */
@@ -47,17 +48,19 @@ public class MyCenterListAdapter extends BaseAdapter {
 		if (convertView == null) {
 			convertView = layoutInflater.inflate(
 					R.layout.item_listview_mycenter, null);
-		}
-		// tv_message_id 用于确定信息唯一
-		TextView tv_mycenter_funtype = (TextView) convertView
-				.findViewById(R.id.tv_mycenter_funtype);
-		TextView tv_mycenter_unread = (TextView) convertView
-				.findViewById(R.id.tv_mycenter_unread);
 
-		tv_mycenter_funtype.setText(list.get(position).getMycenter_type());
-		if(list.get(position).getMycenter_unread()>0){
-			tv_mycenter_unread.setVisibility(View.VISIBLE);
-			tv_mycenter_unread.setText(list.get(position).getMycenter_unread()+"");
+			// tv_message_id 用于确定信息唯一
+			TextView tv_mycenter_funtype = (TextView) convertView
+					.findViewById(R.id.tv_mycenter_funtype);
+			TextView tv_mycenter_unread = (TextView) convertView
+					.findViewById(R.id.tv_mycenter_unread);
+
+			tv_mycenter_funtype.setText(list.get(position).getMycenter_type());
+			if (list.get(position).getMycenter_unread() > 0) {
+				tv_mycenter_unread.setVisibility(View.VISIBLE);
+				tv_mycenter_unread.setText(list.get(position)
+						.getMycenter_unread() + "");
+			}
 		}
 		return convertView;
 	}

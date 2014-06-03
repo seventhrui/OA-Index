@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="7"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -45,33 +45,43 @@
             android:label="@string/notification"/>
         <activity 
             android:name="com.example.activity.MyCenterActivity" 
-            android:label="@string/activity_mycenter"/>
+            android:label="@string/activity_mycenter"
+            android:icon="@drawable/mycenter"/>
         <activity 
             android:name="com.example.activity.MessageNewActivity"
+            android:icon="@drawable/message_"
             android:label="@string/activity_newmessage"/>
         <activity
             android:name="com.example.activity.MessageInboxListAvtivity"
+            android:icon="@drawable/message_"
             android:label="@string/activity_inbox" />
         <activity
             android:name="com.example.activity.MessageShowActivity"
+            android:icon="@drawable/message_"
             android:label="@string/activity_showmessage" />
         <activity
             android:name="com.example.activity.MessageOutboxListAvtivity"
+            android:icon="@drawable/message_"
             android:label="@string/activity_outbox"/>
         <activity 
             android:name="com.example.activity.MessageDraftListAvtivity"
+            android:icon="@drawable/message_"
             android:label="@string/activity_draft"/>
         <activity 
             android:name="com.example.activity.MessageDraftShowActivity"
+            android:icon="@drawable/message_"
             android:label="@string/activity_draftmessageshow"/>
         <activity 
             android:name="com.example.activity.MseeageWasteListAvtivity"
+            android:icon="@drawable/message_"
             android:label="@string/activity_waste"/>
         <activity 
             android:name="com.example.activity.MessageRepliesActivity"
+            android:icon="@drawable/message_"
             android:label="@string/action_reply"/>
         <activity 
             android:name="com.example.activity.MessageForwardActivity"
+            android:icon="@drawable/message_"
             android:label="@string/action_transpond"/>
         <activity
             android:name="com.example.mytree.ContactsActivity"
